@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Search, X } from 'lucide-react-native';
 import { BranchChip } from '@/components/BranchChip';
+import { CartBar } from '@/components/CartBar';
 import { ProductRow } from '@/components/ProductRow';
 import { useStorefront } from '@/context/StorefrontContext';
 import { foldText } from '@/lib/text';
@@ -189,6 +190,7 @@ export default function MenuScreen() {
           ))}
         </ScrollView>
       )}
+      <CartBar />
     </View>
   );
 }
@@ -221,7 +223,7 @@ const styles = StyleSheet.create({
   },
   searchInput: { flex: 1, fontSize: font.base, color: colors.zinc900 },
   pills: { gap: 8, paddingVertical: 10 },
-  list: { padding: space.lg, paddingBottom: 48, gap: space.xl },
+  list: { padding: space.lg, paddingBottom: 96, gap: space.xl },
   section: { gap: 10 },
   sectionHeader: { flexDirection: 'row', alignItems: 'baseline', gap: 8 },
   sectionTitle: { fontSize: font.title + 2, fontWeight: '800', color: colors.zinc800, letterSpacing: -0.3 },

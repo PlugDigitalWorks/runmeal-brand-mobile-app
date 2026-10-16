@@ -3,6 +3,7 @@ import { Redirect, Tabs, router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { House, QrCode, ShoppingCart, User, UtensilsCrossed } from 'lucide-react-native';
 import { useBrand } from '@/context/BrandContext';
+import { useCart } from '@/context/CartContext';
 import { colors, shadow } from '@/theme';
 
 /** Kahve Dünyası / Starbucks style bar: the table QR scanner sits raised in the middle. */
@@ -25,6 +26,7 @@ function ScanTabButton() {
 export default function TabsLayout() {
   const { t } = useTranslation();
   const { brand, ready } = useBrand();
+  const { summary } = useCart();
   if (ready && !brand) return <Redirect href="/brands" />;
 
   return (
@@ -46,7 +48,12 @@ export default function TabsLayout() {
       <Tabs.Screen name="qr" options={{ title: t('tabs.scan'), tabBarButton: () => <ScanTabButton /> }} />
       <Tabs.Screen
         name="cart"
-        options={{ title: t('tabs.cart'), tabBarIcon: ({ color }) => <ShoppingCart size={22} color={color} /> }}
+        options={{
+          title: t('tabs.cart'),
+          tabBarIcon: ({ color }) => <ShoppingCart size={22} color={color} />,
+          tabBarBadge: summary.count > 0 ? summary.count : undefined,
+          tabBarBadgeStyle: { backgroundColor: colors.primary, color: colors.primaryForeground, fontSize: 11 },
+        }}
       />
       <Tabs.Screen name="account" options={{ title: t('tabs.account'), tabBarIcon: ({ color }) => <User size={22} color={color} /> }} />
     </Tabs>

@@ -13,6 +13,13 @@ export interface Branch {
   order_type_settings?: {
     pickup?: { isActive: boolean };
     delivery?: { isActive: boolean };
+    scheduledPickup?: { isActive: boolean };
+    scheduledDelivery?: { isActive: boolean };
     tableOrder?: { isActive: boolean };
+  };
+  payment_settings?: {
+    isActive?: boolean;
+    onlineMethods?: { card?: { isActive: boolean; provider?: string } };
+    offlineMethods?: { cash?: { isActive: boolean }; cardOnDelivery?: { isActive: boolean } };
   };
 }

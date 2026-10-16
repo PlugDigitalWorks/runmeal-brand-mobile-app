@@ -6,7 +6,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Check, X } from 'lucide-react-native';
 import { useBrand } from '@/context/BrandContext';
+import { useCart } from '@/context/CartContext';
 import { useStorefront } from '@/context/StorefrontContext';
+import { apiErrorMessage } from '@/lib/api-error';
 import {
   initialSelections,
   optionsTotal,
@@ -38,6 +40,8 @@ export default function ProductSheet() {
   const [quantity, setQuantity] = useState(1);
   const [note, setNote] = useState('');
   const [message, setMessage] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
+  const cart = useCart();
 
   useEffect(() => {
     let cancelled = false;
@@ -67,7 +71,8 @@ export default function ProductSheet() {
     setMessage(result.rejected ? t('product.maxError', { count: result.rejected.count }) : null);
   };
 
-  const onAdd = () => {
+  const onAdd = async () => {
+    if (!product) return;
     const problem = validateSelections(groups, selections);
     if (problem) {
       setMessage(
@@ -77,7 +82,20 @@ export default function ProductSheet() {
       );
       return;
     }
-    setMessage(t('product.comingSoon'));
+    if (!branch) {
+      setMessage(t('product.noBranch'));
+      return;
+    }
+    setAdding(true);
+    setMessage(null);
+    try {
+      await cart.add(product, groups, selections, quantity, note);
+      router.back();
+    } catch (error) {
+      setMessage(apiErrorMessage(error, t('product.addFailed')));
+    } finally {
+      setAdding(false);
+    }
   };
 
   const close = (
@@ -153,6 +171,7 @@ export default function ProductSheet() {
             label={t('product.addToCart')}
             trailing={formatMoney(total, currency)}
             onPress={onAdd}
+            loading={adding}
             style={{ flex: 1 }}
           />
         </View>

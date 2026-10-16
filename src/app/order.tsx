@@ -4,21 +4,34 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { CreditCard, QrCode, Utensils, Wallet, X } from 'lucide-react-native';
+import { useTable } from '@/context/TableContext';
 import { resolveQr } from '@/services/table.service';
 import { Button } from '@/ui/Button';
 import { colors, font, radius, space } from '@/theme';
 import type { TableResolveResponse } from '@/types/table';
 
-/** brandfe's TableInfoPanel. Part 2 adds the table cart, check and payment. */
+/** brandfe's TableInfoPanel: a scanned table starts the table journey; the menu, cart and checkout then order for it. */
 export default function OrderScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { qr } = useLocalSearchParams<{ qr?: string }>();
+  const { startJourney, endJourney } = useTable();
   const [table, setTable] = useState<TableResolveResponse | null>(null);
 
   useEffect(() => {
-    if (qr) resolveQr(qr).then(setTable).catch(() => setTable(null));
-  }, [qr]);
+    if (!qr) return;
+    resolveQr(qr)
+      .then(async (resolved) => {
+        setTable(resolved);
+        await startJourney({ ...resolved, qrToken: qr });
+      })
+      .catch(() => setTable(null));
+  }, [qr, startJourney]);
+
+  const leave = async () => {
+    await endJourney();
+    router.replace('/home');
+  };
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top + 12 }]}>
@@ -52,7 +65,10 @@ export default function OrderScreen() {
               </View>
             ) : null}
           </View>
-          <Button label={t('cart.goToMenu')} onPress={() => router.replace('/menu')} />
+          <Button label={t('table.menu')} onPress={() => router.replace('/menu')} />
+          <Pressable onPress={leave} style={{ alignSelf: 'center' }} hitSlop={8}>
+            <Text style={styles.leave}>{t('table.ended')}</Text>
+          </Pressable>
         </View>
       )}
     </View>
@@ -98,4 +114,5 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   chipText: { fontSize: font.small, fontWeight: '600', color: colors.zinc600 },
+  leave: { color: colors.zinc500, fontWeight: '600', fontSize: font.body },
 });

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ChevronRight, Plus } from 'lucide-react-native';
 import { BrandHeader } from '@/components/BrandHeader';
 import { BranchChip } from '@/components/BranchChip';
+import { CartBar } from '@/components/CartBar';
 import { RewardsButton } from '@/components/RewardsButton';
 import { useBrand } from '@/context/BrandContext';
 import { useStorefront } from '@/context/StorefrontContext';
@@ -99,13 +100,14 @@ function SectionHeader({ title, action, onAction }: { title: string; action?: st
           <Text style={styles.sectionAction}>{action}</Text>
         </Pressable>
       ) : null}
+      <CartBar />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
-  content: { paddingTop: space.lg, paddingBottom: 56, gap: space.lg },
+  content: { paddingTop: space.lg, paddingBottom: 96, gap: space.lg },
   padded: { paddingHorizontal: space.lg },
   pressed: { opacity: 0.92, transform: [{ scale: 0.99 }] },
   banner: { width: '100%', aspectRatio: 3, borderRadius: radius.xl, backgroundColor: colors.accent },
