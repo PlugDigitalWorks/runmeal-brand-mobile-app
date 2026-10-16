@@ -41,7 +41,7 @@ export default function LinkScreen() {
           return;
         }
         await selectBrand(brand);
-        router.replace('/menu');
+        router.replace('/home');
       } catch (e) {
         setFailure(e instanceof LinkFailure ? e.reason : 'notFound');
       }

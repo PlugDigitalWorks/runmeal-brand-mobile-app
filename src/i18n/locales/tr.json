@@ -21,6 +21,71 @@
     "allow": "İzin ver",
     "invalid": "Bu QR bir Runmeal cafesine ait değil."
   },
-  "header": { "switchBrand": "Cafe değiştir" },
-  "table": { "welcome": "{{table}} masasına hoş geldin" }
+  "header": {
+    "switchBrand": "Cafe değiştir"
+  },
+  "table": {
+    "welcome": "{{table}} masasına hoş geldin",
+    "payNow": "Şimdi öde",
+    "payLater": "Sonra öde"
+  },
+  "tabs": {
+    "home": "Ana Sayfa",
+    "menu": "Menü",
+    "scan": "QR Okut",
+    "cart": "Sepet",
+    "account": "Hesap"
+  },
+  "home": {
+    "tableTitle": "Masadasın?",
+    "tableBody": "QR'ı okut, siparişin masana gelsin.",
+    "categories": "Kategoriler",
+    "popular": "Öne çıkanlar",
+    "seeMenu": "Tümünü gör"
+  },
+  "branch": {
+    "choose": "Şube seç",
+    "title": "Şubeler",
+    "pickup": "Gel-al",
+    "table": "Masaya",
+    "delivery": "Paket servis",
+    "locationOff": "Konum kapalı; şubeler alfabetik sıralandı.",
+    "error": "Şubeler yüklenemedi."
+  },
+  "menu": {
+    "title": "Menü",
+    "search": "Ürün ara",
+    "empty": "Bu şubede şu an ürün yok.",
+    "noResults": "Sonuç bulunamadı.",
+    "error": "Menü yüklenemedi."
+  },
+  "product": {
+    "required": "Zorunlu",
+    "optional": "Opsiyonel",
+    "selectAtLeast": "En az {{count}} seç",
+    "chooseOne": "1 seçim",
+    "max": "En fazla {{count}}",
+    "free": "Ücretsiz",
+    "note": "Not",
+    "notePlaceholder": "Örn. az şekerli",
+    "addToCart": "Sepete ekle",
+    "requiredError": "{{name}} için seçim yap.",
+    "minError": "{{name}} için en az {{count}} seç.",
+    "maxError": "En fazla {{count}} seçebilirsin.",
+    "comingSoon": "Sepet bir sonraki adımda bağlanacak.",
+    "error": "Ürün yüklenemedi."
+  },
+  "cart": {
+    "emptyTitle": "Sepetin boş",
+    "emptyBody": "Menüden beğendiklerini ekle.",
+    "goToMenu": "Menüye git"
+  },
+  "account": {
+    "title": "Hesabım",
+    "cafe": "Seçili cafe",
+    "change": "Değiştir",
+    "language": "Dil",
+    "signInSoon": "Giriş, siparişlerin ve ödüllerin yakında burada."
+  },
+  "retry": "Tekrar dene"
 }

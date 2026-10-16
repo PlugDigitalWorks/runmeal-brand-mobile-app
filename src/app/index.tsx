@@ -22,5 +22,5 @@ export default function Index() {
     );
   }
   if (referrerUrl) return <Redirect href={toLinkRoute(referrerUrl) as Href} />;
-  return <Redirect href={brand ? '/menu' : '/brands'} />;
+  return <Redirect href={brand ? '/home' : '/brands'} />;
 }

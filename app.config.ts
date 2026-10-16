@@ -55,6 +55,10 @@ const config: ExpoConfig = {
       },
     ],
     [
+      'expo-location',
+      { locationWhenInUsePermission: 'Sana en yakın şubeyi göstermek için konumunu kullanıyoruz.' },
+    ],
+    [
       'expo-camera',
       {
         cameraPermission: 'Masadaki QR kodu okutmak için kameraya erişim gerekiyor.',

@@ -33,7 +33,7 @@ export default function BrandsScreen() {
 
   const open = async (brand: AppBrand) => {
     await selectBrand(brand);
-    router.replace('/menu');
+    router.replace('/home');
   };
 
   const choose = async (row: Row) => {

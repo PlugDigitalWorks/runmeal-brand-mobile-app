@@ -2,9 +2,11 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { ChevronDown } from 'lucide-react-native';
 import { useBrand } from '@/context/BrandContext';
+import { colors, font } from '@/theme';
 
-/** Header title: the active cafe; tapping it opens the cafe picker. */
+/** The active cafe; tapping it opens the cafe picker. */
 export function BrandSwitcherButton() {
   const { t } = useTranslation();
   const { brand } = useBrand();
@@ -22,20 +24,24 @@ export function BrandSwitcherButton() {
       ) : (
         <View style={[styles.logo, styles.placeholder]} />
       )}
-      <View>
+      <View style={{ flexShrink: 1 }}>
         <Text style={styles.name} numberOfLines={1}>
           {brand.name}
         </Text>
-        <Text style={styles.hint}>{t('header.switchBrand')} ▾</Text>
+        <View style={styles.hintRow}>
+          <Text style={styles.hint}>{t('header.switchBrand')}</Text>
+          <ChevronDown size={12} color={colors.zinc500} />
+        </View>
       </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  button: { flexDirection: 'row', alignItems: 'center', gap: 8, maxWidth: 240 },
-  logo: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#fff' },
-  placeholder: { backgroundColor: '#f5a623' },
-  name: { fontSize: 16, fontWeight: '600' },
-  hint: { fontSize: 11, color: '#888' },
+  button: { flexDirection: 'row', alignItems: 'center', gap: 10, maxWidth: 260 },
+  logo: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.zinc100 },
+  placeholder: { backgroundColor: colors.primary },
+  name: { fontSize: font.base + 1, fontWeight: '700', color: colors.zinc900 },
+  hintRow: { flexDirection: 'row', alignItems: 'center', gap: 2 },
+  hint: { fontSize: font.small, color: colors.zinc500 },
 });

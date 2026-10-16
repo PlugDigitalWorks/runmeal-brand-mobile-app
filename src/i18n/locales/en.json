@@ -21,6 +21,71 @@
     "allow": "Allow",
     "invalid": "This QR doesn't belong to a Runmeal cafe."
   },
-  "header": { "switchBrand": "Switch cafe" },
-  "table": { "welcome": "Welcome to table {{table}}" }
+  "header": {
+    "switchBrand": "Switch cafe"
+  },
+  "table": {
+    "welcome": "Welcome to table {{table}}",
+    "payNow": "Pay now",
+    "payLater": "Pay later"
+  },
+  "tabs": {
+    "home": "Home",
+    "menu": "Menu",
+    "scan": "Scan",
+    "cart": "Cart",
+    "account": "Account"
+  },
+  "home": {
+    "tableTitle": "At a table?",
+    "tableBody": "Scan the QR and we'll bring your order over.",
+    "categories": "Categories",
+    "popular": "Popular",
+    "seeMenu": "See all"
+  },
+  "branch": {
+    "choose": "Choose a branch",
+    "title": "Branches",
+    "pickup": "Pickup",
+    "table": "Table",
+    "delivery": "Delivery",
+    "locationOff": "Location is off, so branches are sorted by name.",
+    "error": "Couldn't load branches."
+  },
+  "menu": {
+    "title": "Menu",
+    "search": "Search the menu",
+    "empty": "Nothing on the menu at this branch right now.",
+    "noResults": "No matches.",
+    "error": "Couldn't load the menu."
+  },
+  "product": {
+    "required": "Required",
+    "optional": "Optional",
+    "selectAtLeast": "Choose at least {{count}}",
+    "chooseOne": "Choose 1",
+    "max": "Up to {{count}}",
+    "free": "Free",
+    "note": "Note",
+    "notePlaceholder": "Less sugar, please",
+    "addToCart": "Add to cart",
+    "requiredError": "Choose an option for {{name}}.",
+    "minError": "Choose at least {{count}} for {{name}}.",
+    "maxError": "You can choose up to {{count}}.",
+    "comingSoon": "The cart is coming in the next step.",
+    "error": "Couldn't load this product."
+  },
+  "cart": {
+    "emptyTitle": "Your cart is empty",
+    "emptyBody": "Add something you like from the menu.",
+    "goToMenu": "Go to menu"
+  },
+  "account": {
+    "title": "Account",
+    "cafe": "Your cafe",
+    "change": "Change",
+    "language": "Language",
+    "signInSoon": "Sign-in, your orders and rewards will show up here soon."
+  },
+  "retry": "Try again"
 }

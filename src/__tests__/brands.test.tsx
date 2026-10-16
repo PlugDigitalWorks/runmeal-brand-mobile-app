@@ -59,7 +59,7 @@ it('resolves a directory cafe by host, selects it and opens its menu', async () 
 
   await waitFor(() => expect(mockSelectBrand).toHaveBeenCalledWith(resolvedB));
   expect(resolveBrandByHost).toHaveBeenCalledWith('bcafe.runmeal.com');
-  expect(mockReplace).toHaveBeenCalledWith('/menu');
+  expect(mockReplace).toHaveBeenCalledWith('/home');
 });
 
 it('selects a recent cafe without resolving again', async () => {
