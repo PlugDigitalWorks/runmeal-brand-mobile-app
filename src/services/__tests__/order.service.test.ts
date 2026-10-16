@@ -1,6 +1,6 @@
 import { api } from '@/lib/api';
 import { createTablePayLaterOrder, getAddresses, getMyOrders, getOrder, initializePayment, setActiveAddress } from '../order.service';
-import { getMemberQr, getStampCards } from '../loyalty.service';
+import { createAppleWalletLink, createGoogleWalletLink, getMemberQr, getStampCards } from '../loyalty.service';
 
 jest.mock('@/lib/api', () => ({ api: { get: jest.fn(), post: jest.fn(), patch: jest.fn() } }));
 const mocked = api as unknown as Record<'get' | 'post' | 'patch', jest.Mock>;
@@ -60,4 +60,13 @@ it('loads the member QR and stamp cards', async () => {
   await expect(getMemberQr()).resolves.toEqual({ qrToken: 't', qrValue: 'v' });
   await expect(getStampCards('b1')).resolves.toEqual([]);
   expect(mocked.get).toHaveBeenLastCalledWith('/loyalty/stamps/me/b1');
+});
+
+it('asks the API for a Wallet link for one stamp campaign', async () => {
+  mocked.post.mockResolvedValue({ data: { data: { url: 'https://api.runmeal.com/apple-wallet/download/t.pkpass' } } });
+  expect(await createAppleWalletLink('b1', 'camp1')).toEqual({ url: 'https://api.runmeal.com/apple-wallet/download/t.pkpass' });
+  expect(mocked.post).toHaveBeenCalledWith('/loyalty/stamps/me/b1/camp1/apple-wallet');
+  mocked.post.mockResolvedValue({ data: { data: { url: 'https://pay.google.com/gp/v/save/jwt' } } });
+  await createGoogleWalletLink('b1', 'camp1');
+  expect(mocked.post).toHaveBeenLastCalledWith('/loyalty/stamps/me/b1/camp1/google-wallet');
 });

@@ -101,7 +101,8 @@ export default function CheckoutScreen() {
     if (submitting.current) return;
     // Lines from before sign-in (or from a table scan) are still being moved into the API cart.
     if (!cartId && cartLoading) return;
-    if (!branch || !brand || !currentType || !cartId) return setError(t('checkout.empty'));
+    if (!currentType) return setError(t('checkout.noOrderTypes'));
+    if (!branch || !brand || !cartId) return setError(t('checkout.empty'));
     const tablePayLater = currentType === 'TABLE_ORDER' && currentTiming === 'payLater';
     if (!tablePayLater && !currentMethod) return setError(t('checkout.noMethods'));
     if (isScheduled(currentType) && !slot) return setError(t('checkout.chooseSlot'));
@@ -163,6 +164,8 @@ export default function CheckoutScreen() {
 
   if (!branch) return <ActivityIndicator style={{ marginTop: 64 }} color={colors.primary} />;
 
+  // A branch with every order type switched off takes no online orders (brandfe shows an empty list).
+  const noOrderTypes = orderTypes.length === 0;
   const tablePayLater = currentType === 'TABLE_ORDER' && currentTiming === 'payLater';
   const ctaLabel = !tablePayLater && currentMethod === 'ONLINE_CARD' ? t('checkout.proceedToPayment') : t('checkout.placeOrder');
 
@@ -186,6 +189,7 @@ export default function CheckoutScreen() {
         <Text style={styles.branch}>{branch.name}</Text>
 
         <Section title={t('checkout.orderType')}>
+          {noOrderTypes ? <Text style={styles.muted}>{t('checkout.noOrderTypes')}</Text> : null}
           {orderTypes.map((type) => (
             <Choice key={type} label={t(`checkout.${type}`)} selected={type === currentType} onPress={() => setOrderType(type)} />
           ))}
@@ -248,7 +252,7 @@ export default function CheckoutScreen() {
           </Section>
         ) : null}
 
-        {!tablePayLater ? (
+        {!tablePayLater && !noOrderTypes ? (
           <Section title={t('checkout.payment')}>
             {methods.length === 0 ? <Text style={styles.muted}>{t('checkout.noMethods')}</Text> : null}
             {methods.map((m) => (
@@ -293,7 +297,11 @@ export default function CheckoutScreen() {
 
       <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 12) }]}>
         {error ? <Text style={styles.error}>{error}</Text> : null}
-        <Button label={ctaLabel} trailing={formatMoney(summary.total, currency)} loading={busy || (!cartId && cartLoading)} onPress={placeOrder} />
+        {noOrderTypes ? (
+          <Button label={t('checkout.changeBranch')} onPress={() => router.push('/branches')} />
+        ) : (
+          <Button label={ctaLabel} trailing={formatMoney(summary.total, currency)} loading={busy || (!cartId && cartLoading)} onPress={placeOrder} />
+        )}
       </View>
     </View>
   );

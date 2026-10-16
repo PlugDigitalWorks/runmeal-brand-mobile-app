@@ -103,19 +103,30 @@
   "retry": "Try again",
   "rewards": {
     "title": "My loyalty cards",
-    "subtitle": "Collect stamps in store and get your gift at the till with your QR code.",
-    "cardTitle": "Loyalty card",
-    "guest": "Guest",
     "qrLocked": "Your QR code shows up here once you sign in.",
     "signInBody": "Sign in to collect stamps or use your gift; you'll show this QR code at the till.",
     "signIn": "Sign in",
-    "qrPagePermanent": "This code is yours and never changes. Staff see all your cards with it.",
-    "cardStatus": "Sign in to collect stamps.",
     "loadError": "Couldn't load your loyalty card.",
-    "stampsLeft": "{{count}} more for a free {{category}}",
-    "ready": "Your gift is ready",
-    "noCampaign": "This cafe has no stamp card right now.",
-    "instruction": "Show this QR code at the till to collect stamps or use your gift."
+    "qrPageFooter": "This code is yours and covers all your cards; just tell the cashier if you want to claim your reward.",
+    "pass": {
+      "status": "STATUS",
+      "ready": "REWARD READY",
+      "paused": "PAUSED",
+      "campaign": "CAMPAIGN",
+      "expires": "EXPIRES",
+      "remaining": "STAMPS LEFT",
+      "customer": "CUSTOMER"
+    },
+    "appleWallet": {
+      "add": "Add to Apple Wallet",
+      "creating": "Preparing your pass...",
+      "error": "Your Apple Wallet pass could not be created. Please try again."
+    },
+    "googleWallet": {
+      "add": "Add to Google Wallet",
+      "creating": "Preparing your pass...",
+      "error": "Your Google Wallet pass could not be created. Please try again."
+    }
   },
   "scan": {
     "title": "Scan the table QR",
@@ -184,7 +195,9 @@
     "chooseAddress": "Choose a delivery address.",
     "failed": "We couldn't place your order. Try again.",
     "empty": "Your cart is empty.",
-    "noMethods": "This branch has no payment method for this order type."
+    "noMethods": "This branch has no payment method for this order type.",
+    "noOrderTypes": "This branch isn't taking online orders. Choose another branch to order.",
+    "changeBranch": "Choose another branch"
   },
   "payment": {
     "title": "Secure payment",
@@ -234,5 +247,8 @@
     "locationNeeded": "Allow location so the courier can find you.",
     "required": "Fill in street, building, district, city and postcode.",
     "failed": "Couldn't save the address."
+  },
+  "common": {
+    "close": "Close"
   }
 }

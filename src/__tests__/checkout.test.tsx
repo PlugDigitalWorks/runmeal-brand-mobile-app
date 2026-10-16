@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import '@/i18n';
 import CheckoutScreen from '@/app/checkout';
 import { getPendingPayment } from '@/lib/pending-payment';
@@ -127,10 +127,29 @@ it('places one order on a double tap', async () => {
   (initializePayment as jest.Mock).mockReturnValue(new Promise((r) => (resolve = r)));
   await render(<CheckoutScreen />);
   const button = screen.getByText('Continue to payment  ·  £7.80');
-  // Both taps land before the first request answers.
-  const taps = Promise.all([fireEvent.press(button), fireEvent.press(button)]);
-  resolve({ paymentId: 'pay6', paymentUrl: 'https://pay.example/6' });
-  await taps;
+  // Both taps land before the first request answers. One outer act scope: side-by-side
+  // act scopes leave React's act queue broken for the tests that follow.
+  await act(async () => {
+    const taps = Promise.all([fireEvent.press(button), fireEvent.press(button)]);
+    resolve({ paymentId: 'pay6', paymentUrl: 'https://pay.example/6' });
+    await taps;
+  });
   await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/payment'));
   expect(initializePayment).toHaveBeenCalledTimes(1);
+});
+
+it("tells the customer a branch that takes no online orders can't be ordered from, not that the cart is empty", async () => {
+  const saved = branch.order_type_settings;
+  branch.order_type_settings = { pickup: { isActive: false }, scheduledPickup: { isActive: false }, delivery: { isActive: false } };
+  try {
+    await render(<CheckoutScreen />);
+    expect(screen.getByText("This branch isn't taking online orders. Choose another branch to order.")).toBeTruthy();
+    expect(screen.queryByText('Your cart is empty.')).toBeNull();
+    expect(screen.queryByText('Payment')).toBeNull();
+    await fireEvent.press(screen.getByText('Choose another branch'));
+    expect(mockPush).toHaveBeenCalledWith('/branches');
+    expect(initializePayment).not.toHaveBeenCalled();
+  } finally {
+    branch.order_type_settings = saved;
+  }
 });
