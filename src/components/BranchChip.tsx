@@ -8,7 +8,7 @@ import { colors, font, radius } from '@/theme';
 
 /** "📍 Richmond · 0,8 km ▾" — opens the branch sheet. */
 export function BranchChip() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { branch, branches } = useStorefront();
   const distance = branches.find((r) => r.branch.id === branch?.id)?.distanceM;
 
@@ -17,7 +17,7 @@ export function BranchChip() {
       <MapPin size={14} color={colors.primary} />
       <Text style={styles.label} numberOfLines={1}>
         {branch ? branch.name : t('branch.choose')}
-        {branch && distance != null ? `  ·  ${formatDistance(distance, i18n.language)}` : ''}
+        {branch && distance != null ? `  ·  ${formatDistance(distance)}` : ''}
       </Text>
       <ChevronDown size={14} color={colors.zinc500} />
     </Pressable>

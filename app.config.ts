@@ -45,7 +45,6 @@ const config: ExpoConfig = {
   },
   plugins: [
     'expo-router',
-    'expo-localization',
     [
       'expo-splash-screen',
       {
@@ -56,12 +55,12 @@ const config: ExpoConfig = {
     ],
     [
       'expo-location',
-      { locationWhenInUsePermission: 'Sana en yakın şubeyi göstermek için konumunu kullanıyoruz.' },
+      { locationWhenInUsePermission: 'We use your location to show the branch nearest to you.' },
     ],
     [
       'expo-camera',
       {
-        cameraPermission: 'Masadaki QR kodu okutmak için kameraya erişim gerekiyor.',
+        cameraPermission: 'Camera access lets you scan the QR code on your table.',
         recordAudioAndroid: false,
       },
     ],

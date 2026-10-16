@@ -30,11 +30,10 @@ export function sortBranches(branches: Branch[], me: Coordinates | null): Ranked
   );
 }
 
-/** "850 m" / "1,2 km", as in brandfe's BranchSummary. */
-export function formatDistance(meters: number, language?: string | null): string {
+/** "850 m" / "1.2 km", as in brandfe's BranchSummary. */
+export function formatDistance(meters: number): string {
   if (meters < 1000) return `${Math.round(meters)} m`;
   const km = meters / 1000;
-  const locale = language?.startsWith('en') ? 'en-US' : 'tr-TR';
   const digits = km < 100 ? 1 : 0;
-  return `${new Intl.NumberFormat(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(km)} km`;
+  return `${new Intl.NumberFormat('en-GB', { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(km)} km`;
 }

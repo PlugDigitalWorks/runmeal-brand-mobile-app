@@ -73,7 +73,7 @@ it('shows an error when a cafe cannot be resolved', async () => {
   await render(<BrandsScreen />);
   await fireEvent.press(screen.getByText('C Cafe'));
   await waitFor(() =>
-    expect(screen.getByText('Bu cafe şu an açılamıyor. Daha sonra tekrar dene.')).toBeTruthy(),
+    expect(screen.getByText("This cafe can't be opened right now. Try again later.")).toBeTruthy(),
   );
   expect(mockSelectBrand).not.toHaveBeenCalled();
 });

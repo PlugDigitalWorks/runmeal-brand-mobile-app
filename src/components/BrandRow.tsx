@@ -10,7 +10,7 @@ export function BrandRow({ name, logoUrl, busy, onPress }: Props) {
         <Image source={{ uri: logoUrl }} style={styles.logo} contentFit="contain" />
       ) : (
         <View style={[styles.logo, styles.placeholder]}>
-          <Text style={styles.initial}>{name.charAt(0).toLocaleUpperCase('tr')}</Text>
+          <Text style={styles.initial}>{name.charAt(0).toUpperCase()}</Text>
         </View>
       )}
       <Text style={styles.name}>{name}</Text>

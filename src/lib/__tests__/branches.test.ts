@@ -28,12 +28,10 @@ it('sorts by distance from the user, else by name', () => {
 });
 
 it('formats distances like brandfe', () => {
-  expect(formatDistance(850, 'tr')).toBe('850 m');
-  expect(formatDistance(1234, 'tr')).toBe('1,2 km');
-  expect(formatDistance(1234, 'en')).toBe('1.2 km');
+  expect(formatDistance(850)).toBe('850 m');
+  expect(formatDistance(1234)).toBe('1.2 km');
 });
 
 it('drops decimals and groups thousands for far-away branches', () => {
-  expect(formatDistance(8_610_200, 'tr')).toBe('8.610 km');
-  expect(formatDistance(8_610_200, 'en')).toBe('8,610 km');
+  expect(formatDistance(8_610_200)).toBe('8,610 km');
 });

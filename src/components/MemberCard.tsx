@@ -45,7 +45,7 @@ export function MemberCard({ name, subtitle, title, status, earned, target }: Pr
       </View>
       <View style={styles.details}>
         <Text style={styles.name} numberOfLines={1}>
-          {name.toLocaleUpperCase('tr')}
+          {name.toUpperCase()}
         </Text>
         <Text style={styles.subtitle} numberOfLines={1}>
           {subtitle}

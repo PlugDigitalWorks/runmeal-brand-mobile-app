@@ -27,7 +27,7 @@ const FALLBACK = require('@/../assets/images/icon.png');
 
 /** brandfe's ProductDetailModal as a bottom sheet: hero image, option cards, note, stepper and CTA. */
 export default function ProductSheet() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { brand } = useBrand();
@@ -151,7 +151,7 @@ export default function ProductSheet() {
           <QuantityStepper value={quantity} onChange={setQuantity} />
           <Button
             label={t('product.addToCart')}
-            trailing={formatMoney(total, currency, i18n.language)}
+            trailing={formatMoney(total, currency)}
             onPress={onAdd}
             style={{ flex: 1 }}
           />

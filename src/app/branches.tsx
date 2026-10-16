@@ -10,7 +10,7 @@ import type { Branch } from '@/types/branch';
 
 /** Branch picker sheet, styled after brandfe's BranchSelector cards. */
 export default function BranchesSheet() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { branches, branch: selected, selectBranch, location, branchStatus, reload } = useStorefront();
 
   const choose = async (branch: Branch) => {
@@ -54,7 +54,7 @@ export default function BranchesSheet() {
                 {distanceM != null ? (
                   <View style={styles.distanceRow}>
                     <MapPin size={12} color={colors.primary} />
-                    <Text style={styles.distance}>{formatDistance(distanceM, i18n.language)}</Text>
+                    <Text style={styles.distance}>{formatDistance(distanceM)}</Text>
                   </View>
                 ) : null}
                 {chips.length ? (
