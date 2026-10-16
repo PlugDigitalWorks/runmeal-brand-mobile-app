@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -39,7 +39,7 @@ export default function CheckoutScreen() {
   const currency = menu?.currency ?? branch?.currency ?? 'GBP';
   const cafeHost = brand?.primaryDomain ?? brand?.defaultDomain ?? '';
 
-  const orderTypes = useMemo(() => (branch ? orderTypesFor(branch, !!journey) : []), [branch, journey]);
+  const orderTypes = useMemo(() => (branch ? orderTypesFor(branch, journey?.checkoutOptions ?? null) : []), [branch, journey]);
   const [orderType, setOrderType] = useState<OrderType | null>(null);
   const currentType = orderType && orderTypes.includes(orderType) ? orderType : (orderTypes[0] ?? null);
 
@@ -50,7 +50,10 @@ export default function CheckoutScreen() {
   const [timing, setTiming] = useState<TableTiming | null>(null);
   const currentTiming = timing && tableTimings.includes(timing) ? timing : (tableTimings[0] ?? null);
 
-  const methods = useMemo(() => (branch && currentType ? paymentMethodsFor(branch, currentType) : []), [branch, currentType]);
+  const methods = useMemo(
+    () => (branch && currentType ? paymentMethodsFor(branch, currentType, !!journey) : []),
+    [branch, currentType, journey],
+  );
   const [method, setMethod] = useState<PaymentMethod | null>(null);
   const currentMethod = method && methods.includes(method) ? method : (methods[0] ?? null);
 
@@ -58,11 +61,15 @@ export default function CheckoutScreen() {
   const [slotsResult, setSlotsResult] = useState<{ key: string; data: FulfillmentSlotsResponse | null } | null>(null);
   const slots = slotsResult && slotsResult.key === slotsKey ? slotsResult.data : null;
   const slotsLoading = slotsKey !== null && slotsResult?.key !== slotsKey;
-  const [slot, setSlot] = useState<string | null>(null);
+  // A time picked for one scheduled type never carries over to the other.
+  const [picked, setPicked] = useState<{ key: string; value: string } | null>(null);
+  const slot = picked && picked.key === slotsKey ? picked.value : null;
+  const setSlot = (value: string) => slotsKey && setPicked({ key: slotsKey, value });
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [addressId, setAddressId] = useState<string | null>(null);
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
+  const submitting = useRef(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -90,12 +97,15 @@ export default function CheckoutScreen() {
   );
 
   const placeOrder = async () => {
+    // A fast double tap lands before `busy` re-renders the button; the ref stops the second order.
+    if (submitting.current) return;
     if (!branch || !brand || !currentType || !cartId) return setError(t('checkout.empty'));
     const tablePayLater = currentType === 'TABLE_ORDER' && currentTiming === 'payLater';
     if (!tablePayLater && !currentMethod) return setError(t('checkout.noMethods'));
     if (isScheduled(currentType) && !slot) return setError(t('checkout.chooseSlot'));
     if (isDelivery(currentType) && !addressId) return setError(t('checkout.chooseAddress'));
 
+    submitting.current = true;
     setBusy(true);
     setError(null);
     try {
@@ -144,6 +154,7 @@ export default function CheckoutScreen() {
     } catch (e) {
       setError(apiErrorMessage(e, t('checkout.failed')));
     } finally {
+      submitting.current = false;
       setBusy(false);
     }
   };

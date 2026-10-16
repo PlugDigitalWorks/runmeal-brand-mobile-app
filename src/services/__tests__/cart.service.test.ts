@@ -7,12 +7,15 @@ const headers = { headers: { 'x-branch-id': 'br1' } };
 
 beforeEach(() => Object.values(mocked).forEach((fn) => fn.mockReset()));
 
-it('picks the active cart of the branch', async () => {
-  mocked.get.mockResolvedValue({
-    data: { data: [{ id: 'old', branchId: 'br1', isActive: false }, { id: 'c2', branchId: 'br2' }, { id: 'c1', branchId: 'br1' }] },
-  });
-  await expect(getActiveCart('br1')).resolves.toMatchObject({ id: 'c1' });
-  expect(mocked.get).toHaveBeenCalledWith('/carts', headers);
+it('picks the active cart of the branch and reads it in full', async () => {
+  mocked.get
+    .mockResolvedValueOnce({
+      data: { data: [{ id: 'old', branchId: 'br1', isActive: false }, { id: 'c2', branchId: 'br2' }, { cartId: 'c1', branchId: 'br1' }] },
+    })
+    .mockResolvedValueOnce({ data: { data: { id: 'c1', branchId: 'br1', items: [{ id: 'i1' }], finalPrice: 4 } } });
+  await expect(getActiveCart('br1')).resolves.toEqual({ id: 'c1', branchId: 'br1', items: [{ id: 'i1' }], finalPrice: 4 });
+  expect(mocked.get).toHaveBeenNthCalledWith(1, '/carts', headers);
+  expect(mocked.get).toHaveBeenNthCalledWith(2, '/carts/c1', headers);
 });
 
 it('returns null when there is no open cart', async () => {

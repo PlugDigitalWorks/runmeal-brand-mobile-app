@@ -54,8 +54,14 @@ function refreshAccessToken(): Promise<string> {
       await saveTokens(data.data);
       return data.data.accessToken;
     } catch (error) {
-      await clearSession();
-      expiredListeners.forEach((listener) => listener());
+      // Only a rejected refresh token ends the session; offline or a 5xx keeps it for the next try.
+      // A sign-in that happened meanwhile wrote new tokens and must not be wiped.
+      const status = error instanceof AxiosError ? error.response?.status : undefined;
+      const rejected = status === 400 || status === 401 || status === 403;
+      if (rejected && getTokens()?.refreshToken === current?.refreshToken) {
+        await clearSession();
+        expiredListeners.forEach((listener) => listener());
+      }
       throw error;
     } finally {
       refreshing = null;

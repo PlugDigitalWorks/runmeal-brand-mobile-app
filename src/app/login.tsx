@@ -99,7 +99,13 @@ export default function LoginScreen() {
   };
 
   const title =
-    step === 'code' ? t('auth.codeTitle') : step === 'register' ? t('auth.registerTitle') : step === 'captcha' ? t('auth.verifyHuman') : t('auth.title');
+    step === 'code'
+      ? t('auth.codeTitle')
+      : step === 'register'
+        ? t('auth.registerTitle')
+        : step === 'captcha'
+          ? t('auth.verifyHuman')
+          : t('auth.title');
 
   return (
     <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -120,7 +126,10 @@ export default function LoginScreen() {
               <TextInput
                 testID="login-email"
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={(value) => {
+                  setError(null);
+                  setEmail(value);
+                }}
                 placeholder={t('auth.emailPlaceholder')}
                 placeholderTextColor={colors.zinc400}
                 keyboardType="email-address"
@@ -135,7 +144,10 @@ export default function LoginScreen() {
                 <TextInput
                   testID="login-password"
                   value={password}
-                  onChangeText={setPassword}
+                  onChangeText={(value) => {
+                    setError(null);
+                    setPassword(value);
+                  }}
                   secureTextEntry
                   autoComplete="password"
                   textContentType="password"
@@ -149,7 +161,10 @@ export default function LoginScreen() {
               loading={busy}
               onPress={() => toCaptcha(step === 'email' ? 'otp' : 'password')}
             />
-            <Link label={step === 'email' ? t('auth.usePassword') : t('auth.useCode')} onPress={() => setStep(step === 'email' ? 'password' : 'email')} />
+            <Link
+              label={step === 'email' ? t('auth.usePassword') : t('auth.useCode')}
+              onPress={() => setStep(step === 'email' ? 'password' : 'email')}
+            />
             <Link label={t('auth.createAccount')} onPress={() => setStep('register')} />
           </>
         ) : null}
@@ -168,7 +183,10 @@ export default function LoginScreen() {
             <TextInput
               testID="login-code"
               value={code}
-              onChangeText={(value) => setCode(value.replace(/\D/g, '').slice(0, 6))}
+              onChangeText={(value) => {
+                setError(null);
+                setCode(value.replace(/\D/g, '').slice(0, 6));
+              }}
               placeholder={t('auth.code')}
               placeholderTextColor={colors.zinc400}
               keyboardType="number-pad"
@@ -186,15 +204,34 @@ export default function LoginScreen() {
         {step === 'register' ? (
           <>
             <Field label={t('auth.firstName')}>
-              <TextInput value={firstName} onChangeText={setFirstName} autoComplete="given-name" style={styles.input} />
+              <TextInput
+                value={firstName}
+                onChangeText={(value) => {
+                  setError(null);
+                  setFirstName(value);
+                }}
+                autoComplete="given-name"
+                style={styles.input}
+              />
             </Field>
             <Field label={t('auth.lastName')}>
-              <TextInput value={lastName} onChangeText={setLastName} autoComplete="family-name" style={styles.input} />
+              <TextInput
+                value={lastName}
+                onChangeText={(value) => {
+                  setError(null);
+                  setLastName(value);
+                }}
+                autoComplete="family-name"
+                style={styles.input}
+              />
             </Field>
             <Field label={t('auth.email')}>
               <TextInput
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={(value) => {
+                  setError(null);
+                  setEmail(value);
+                }}
                 placeholder={t('auth.emailPlaceholder')}
                 placeholderTextColor={colors.zinc400}
                 keyboardType="email-address"

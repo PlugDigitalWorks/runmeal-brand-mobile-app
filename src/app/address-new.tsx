@@ -44,6 +44,14 @@ export default function NewAddressScreen() {
 
   const useMyLocation = async () => {
     setError(null);
+    try {
+      await fillFromLocation();
+    } catch {
+      setError(t('address.locationNeeded'));
+    }
+  };
+
+  const fillFromLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') return setError(t('address.locationNeeded'));
     const position = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
@@ -84,7 +92,8 @@ export default function NewAddressScreen() {
         countryCode: country,
         street: form.street.trim(),
         buildingNumber: form.buildingNumber.trim(),
-        apartmentNumber: form.apartmentNumber.trim(),
+        // Optional fields are left out when blank: the API validates any string it gets (Length 1-64).
+        ...(form.apartmentNumber.trim() ? { apartmentNumber: form.apartmentNumber.trim() } : {}),
         district: form.district.trim(),
         province: form.province.trim(),
         postalCode: form.postalCode.trim(),

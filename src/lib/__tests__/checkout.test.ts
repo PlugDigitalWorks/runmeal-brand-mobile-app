@@ -27,15 +27,24 @@ const dharma = branch({
 });
 
 it('offers the order types the branch enables, in brandfe order', () => {
-  expect(orderTypesFor(dharma, false)).toEqual(['PICKUP', 'SCHEDULED_PICKUP']);
+  expect(orderTypesFor(dharma, null)).toEqual(['PICKUP', 'SCHEDULED_PICKUP']);
   const all = branch({
     order_type_settings: { pickup: { isActive: true }, delivery: { isActive: true }, scheduledDelivery: { isActive: true }, scheduledPickup: { isActive: false } },
   });
-  expect(orderTypesFor(all, false)).toEqual(['DELIVERY', 'SCHEDULED_DELIVERY', 'PICKUP']);
+  expect(orderTypesFor(all, null)).toEqual(['DELIVERY', 'SCHEDULED_DELIVERY', 'PICKUP']);
 });
 
-it('orders at the table during a table journey', () => {
-  expect(orderTypesFor(dharma, true)).toEqual(['TABLE_ORDER', 'PICKUP']);
+it('orders at the table only when the table allows paying, plus pickup when the branch has it', () => {
+  expect(orderTypesFor(dharma, { payNow: true, payLater: false })).toEqual(['TABLE_ORDER', 'PICKUP']);
+  expect(orderTypesFor(dharma, { payNow: false, payLater: false })).toEqual(['PICKUP']);
+  const noPickup = branch({ order_type_settings: { pickup: { isActive: false } } });
+  expect(orderTypesFor(noPickup, { payNow: false, payLater: true })).toEqual(['TABLE_ORDER']);
+});
+
+it('pays every table-journey order by card, as brandfe does', () => {
+  const open = branch({ payment_settings: { offlineMethods: { cash: { isActive: true } } } });
+  expect(paymentMethodsFor(open, 'PICKUP', true)).toEqual(['ONLINE_CARD']);
+  expect(paymentMethodsFor(open, 'TABLE_ORDER', true)).toEqual(['ONLINE_CARD']);
 });
 
 it('offers payment methods per branch settings, card only for scheduled pickup', () => {

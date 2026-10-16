@@ -39,6 +39,7 @@ it('reads orders whether paginated or bare', async () => {
   mocked.get.mockResolvedValueOnce({ data: { data: { data: [{ id: 'o1' }] } } }).mockResolvedValueOnce({ data: { data: [{ id: 'o2' }] } });
   await expect(getMyOrders()).resolves.toEqual([{ id: 'o1' }]);
   await expect(getMyOrders()).resolves.toEqual([{ id: 'o2' }]);
+  expect(mocked.get).toHaveBeenCalledWith('/orders/customer', { params: { limit: 100 } });
 });
 
 it('fetches an order with its branch and brand headers', async () => {

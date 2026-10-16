@@ -109,6 +109,25 @@ export function cartLinesFromBackend(cart: Cart | null): CartLine[] {
   }));
 }
 
+/** Replays an API cart's lines as POST /carts/items requests, with brandfe's option mapping. */
+export function requestsFromCart(cart: Cart | null): AddItemDto[] {
+  return (cart?.items ?? []).map((item) => {
+    const options: AddItemOption[] = [];
+    for (const group of item.options ?? []) {
+      const ids = group.selections.map((s) => s.optionId);
+      if (!ids.length) continue;
+      if (group.type === 'SINGLE' || group.type === 'VARIANT') options.push({ groupId: group.groupId, optionId: ids[0] });
+      else if (group.type === 'MULTI') options.push({ groupId: group.groupId, optionIds: ids });
+    }
+    return {
+      productId: item.productId,
+      qty: item.qty,
+      ...(item.note ? { note: item.note } : {}),
+      ...(options.length ? { options } : {}),
+    };
+  });
+}
+
 export interface CartSummary {
   count: number;
   subtotal: number;

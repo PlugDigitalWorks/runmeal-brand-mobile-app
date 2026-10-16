@@ -195,6 +195,7 @@
   "orders": {
     "title": "Your orders",
     "empty": "You haven't ordered yet.",
+    "loadError": "Couldn't load your orders. Pull down to try again.",
     "placed": "Order placed",
     "placedBody": "Thanks! We're on it.",
     "number": "Order #{{number}}",

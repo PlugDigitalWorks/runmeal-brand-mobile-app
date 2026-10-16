@@ -26,7 +26,6 @@ export default function PaymentScreen() {
   const { reload } = useCart();
   const [pending] = useState(getPendingPayment);
   const [failed, setFailed] = useState(false);
-  const [attempt, setAttempt] = useState(0);
   const handled = useRef(false);
   const cafeOrigin = `https://${brand?.primaryDomain ?? brand?.defaultDomain ?? 'runmeal.com'}`;
 
@@ -55,10 +54,10 @@ export default function PaymentScreen() {
     return false;
   };
 
+  // A failed provider session can't be reused; back to checkout for a fresh POST /payments/initialize (brandfe does the same).
   const retry = () => {
-    handled.current = false;
-    setFailed(false);
-    setAttempt((n) => n + 1);
+    clearPendingPayment();
+    router.back();
   };
 
   const close = () => {
@@ -94,7 +93,6 @@ export default function PaymentScreen() {
         </View>
       ) : (
         <WebView
-          key={attempt}
           source={source}
           originWhitelist={['*']}
           onShouldStartLoadWithRequest={intercept}

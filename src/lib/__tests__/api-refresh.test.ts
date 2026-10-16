@@ -77,6 +77,18 @@ it('signs out when the refresh itself is rejected', async () => {
   unsubscribe();
 });
 
+it('keeps the session when the refresh fails for a network or server reason', async () => {
+  await saveSession({ accessToken: 'old', refreshToken: 'r1', sid: 's1', user });
+  const expired = jest.fn();
+  const unsubscribe = onSessionExpired(expired);
+  replies = [() => ({ status: 401, data: {} }), () => ({ status: 503, data: {} })];
+
+  await expect(api.get('/profile')).rejects.toBeInstanceOf(AxiosError);
+  expect(expired).not.toHaveBeenCalled();
+  expect(getTokens()).toEqual({ accessToken: 'old', refreshToken: 'r1', sid: 's1' });
+  unsubscribe();
+});
+
 it('does not try to refresh without a refresh token', async () => {
   replies = [() => ({ status: 401, data: {} })];
   await expect(api.get('/profile')).rejects.toBeInstanceOf(AxiosError);

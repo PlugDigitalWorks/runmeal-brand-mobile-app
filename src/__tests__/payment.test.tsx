@@ -1,14 +1,15 @@
-import { render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import '@/i18n';
 import PaymentScreen from '@/app/payment';
 import { getPendingPayment, setPendingPayment } from '@/lib/pending-payment';
 import { getMyOrders } from '@/services/order.service';
 
 const mockReplace = jest.fn();
+const mockBack = jest.fn();
 const mockReload = jest.fn().mockResolvedValue(undefined);
 let webViewProps: { onShouldStartLoadWithRequest: (r: { url: string }) => boolean; source: unknown };
 
-jest.mock('expo-router', () => ({ router: { replace: (p: unknown) => mockReplace(p), back: jest.fn() } }));
+jest.mock('expo-router', () => ({ router: { replace: (p: unknown) => mockReplace(p), back: () => mockBack() } }));
 jest.mock('@/context/BrandContext', () => ({ useBrand: () => ({ brand: { primaryDomain: 'order.dharmacoffee.uk' } }) }));
 jest.mock('@/context/CartContext', () => ({ useCart: () => ({ reload: mockReload }) }));
 jest.mock('@/services/order.service', () => ({ getMyOrders: jest.fn() }));
@@ -58,4 +59,12 @@ it('shows a retry when the payment fails', async () => {
   expect(await findByText("The payment didn't go through.")).toBeTruthy();
   expect(await findByText('Try again')).toBeTruthy();
   expect(mockReplace).not.toHaveBeenCalled();
+});
+
+it('goes back to checkout for a fresh payment when the customer retries', async () => {
+  const { findByText } = await render(<PaymentScreen />);
+  webViewProps.onShouldStartLoadWithRequest({ url: 'https://order.dharmacoffee.uk/payment/callback?status=failure&paymentId=pay1' });
+  await fireEvent.press(await findByText('Try again'));
+  expect(mockBack).toHaveBeenCalled();
+  expect(getPendingPayment()).toBeNull();
 });

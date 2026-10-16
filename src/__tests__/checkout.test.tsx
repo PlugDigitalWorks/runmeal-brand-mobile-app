@@ -103,3 +103,34 @@ it('opens a pay-later order at the table', async () => {
   await waitFor(() => expect(createTablePayLaterOrder).toHaveBeenCalledWith({ cartId: 'cart1', tableId: 't1', branchId: 'br1', note: '' }));
   expect(mockReplace).toHaveBeenCalledWith({ pathname: '/orders/[id]', params: { id: 'o9', branchId: 'br1', placed: '1' } });
 });
+
+it('pays a table order by card only', async () => {
+  mockTable.journey = { tableId: 't1', tableLabel: '4', checkoutOptions: { payNow: true, payLater: false } };
+  await render(<CheckoutScreen />);
+  expect(screen.queryByText('Pay at the end')).toBeNull();
+  expect(screen.queryByText('Cash')).toBeNull();
+  expect(screen.getByText('Continue to payment  ·  £7.80')).toBeTruthy();
+});
+
+it('falls back to pickup when the table takes no orders of its own', async () => {
+  mockTable.journey = { tableId: 't1', tableLabel: '4', checkoutOptions: { payNow: false, payLater: false } };
+  (initializePayment as jest.Mock).mockResolvedValue({ paymentId: 'pay5', paymentUrl: 'https://pay.example/5' });
+  await render(<CheckoutScreen />);
+  await fireEvent.press(screen.getByText('Continue to payment  ·  £7.80'));
+  await waitFor(() =>
+    expect(initializePayment).toHaveBeenCalledWith(expect.objectContaining({ orderType: 'PICKUP', paymentMethod: 'ONLINE_CARD' }), 'order.dharmacoffee.uk'),
+  );
+});
+
+it('places one order on a double tap', async () => {
+  let resolve: (value: unknown) => void = () => undefined;
+  (initializePayment as jest.Mock).mockReturnValue(new Promise((r) => (resolve = r)));
+  await render(<CheckoutScreen />);
+  const button = screen.getByText('Continue to payment  ·  £7.80');
+  // Both taps land before the first request answers.
+  const taps = Promise.all([fireEvent.press(button), fireEvent.press(button)]);
+  resolve({ paymentId: 'pay6', paymentUrl: 'https://pay.example/6' });
+  await taps;
+  await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/payment'));
+  expect(initializePayment).toHaveBeenCalledTimes(1);
+});

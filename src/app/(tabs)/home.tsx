@@ -87,6 +87,7 @@ export default function HomeScreen() {
           <ChevronRight size={18} color={colors.primary} />
         </Pressable>
       </ScrollView>
+      <CartBar />
     </View>
   );
 }
@@ -100,7 +101,6 @@ function SectionHeader({ title, action, onAction }: { title: string; action?: st
           <Text style={styles.sectionAction}>{action}</Text>
         </Pressable>
       ) : null}
-      <CartBar />
     </View>
   );
 }

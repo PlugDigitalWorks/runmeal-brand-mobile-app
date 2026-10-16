@@ -95,7 +95,7 @@ export default function RewardsScreen() {
               </View>
               <Text style={styles.qrLockedText}>{t('rewards.qrLocked')}</Text>
             </View>
-            <Button label={t('rewards.signIn')} onPress={() => router.push({ pathname: '/login', params: { next: '/rewards' } })} />
+            <Button label={t('rewards.signIn')} onPress={() => router.push('/login')} />
           </>
         )}
         <Text style={styles.note}>{t('rewards.qrPagePermanent')}</Text>

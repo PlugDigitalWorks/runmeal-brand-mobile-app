@@ -8,20 +8,33 @@ const ORDER_TYPE_SETTING: Record<Exclude<OrderType, 'TABLE_ORDER'>, keyof NonNul
   SCHEDULED_PICKUP: 'scheduledPickup',
 };
 
+/** What a scanned table allows, from GET /tables/resolve. */
+export type TableOptions = { payNow: boolean; payLater: boolean };
+
 /**
- * Storefront checkout offers what the branch enables; a scanned table orders to
- * the table or for pickup (brandfe's TableCheckoutPage).
+ * Storefront checkout offers what the branch enables. A scanned table follows
+ * brandfe's TableCheckoutPage: to the table only when pay-now or pay-later is
+ * on, plus pickup when the branch has it.
  */
-export function orderTypesFor(branch: Branch, atTable: boolean): OrderType[] {
+export function orderTypesFor(branch: Branch, table: TableOptions | null): OrderType[] {
   const settings = branch.order_type_settings ?? {};
-  if (atTable) return ['TABLE_ORDER', 'PICKUP'];
+  if (table) {
+    return [
+      ...(table.payNow || table.payLater ? (['TABLE_ORDER'] as OrderType[]) : []),
+      ...(settings.pickup?.isActive === true ? (['PICKUP'] as OrderType[]) : []),
+    ];
+  }
   return (Object.keys(ORDER_TYPE_SETTING) as (keyof typeof ORDER_TYPE_SETTING)[]).filter(
     (type) => settings[ORDER_TYPE_SETTING[type]]?.isActive,
   );
 }
 
-/** brandfe's CheckoutPage rule: a missing setting counts as on; scheduled pickup is card-only. */
-export function paymentMethodsFor(branch: Branch, orderType: OrderType): PaymentMethod[] {
+/**
+ * brandfe's CheckoutPage rule: a missing setting counts as on; scheduled pickup
+ * is card-only. TableCheckoutPage pays every table-journey order by card.
+ */
+export function paymentMethodsFor(branch: Branch, orderType: OrderType, atTable = false): PaymentMethod[] {
+  if (atTable) return ['ONLINE_CARD'];
   const settings = branch.payment_settings;
   const methods: PaymentMethod[] = [];
   if (settings?.onlineMethods?.card?.isActive ?? true) methods.push('ONLINE_CARD');

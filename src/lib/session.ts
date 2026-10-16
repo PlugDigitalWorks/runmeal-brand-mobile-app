@@ -30,6 +30,11 @@ export async function loadSession(): Promise<{ tokens: SessionTokens | null; use
   } catch {
     user = null;
   }
+  if (tokens && !user) {
+    // A half-written session would send a bearer token while the UI shows signed out.
+    await clearSession();
+    return { tokens: null, user: null };
+  }
   return { tokens, user: tokens ? user : null };
 }
 

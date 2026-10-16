@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { isAxiosError } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '@/context/AuthContext';
 import { useStorefront } from '@/context/StorefrontContext';
@@ -8,6 +9,7 @@ import {
   addGuestLine,
   cartLinesFromBackend,
   guestLineFromSelection,
+  requestsFromCart,
   setGuestQty,
   summarize,
   type CartLine,
@@ -16,7 +18,7 @@ import {
 } from '@/lib/cart-model';
 import type { Selections } from '@/lib/product-options';
 import { addCartItem, cartIdOf, getActiveCart, removeCartItem, setCartItemQty } from '@/services/cart.service';
-import type { Cart } from '@/types/cart';
+import type { AddItemDto, Cart } from '@/types/cart';
 import type { OptionGroup, Product } from '@/types/product';
 
 /** brandfe's guest_cart: signed-out lines, kept per branch. */
@@ -47,6 +49,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [guestLoaded, setGuestLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
   const syncing = useRef(false);
+  /** The table guest's API cart, carried over when that guest signs in as a member. */
+  const guestApiCart = useRef<Cart | null>(null);
 
   const persistGuest = useCallback(async (next: GuestCart | null) => {
     setGuest(next);
@@ -75,26 +79,43 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [branchId]);
 
-  // Signed in (or a table guest): replay any signed-out lines into the API cart, as brandfe does on login.
+  // Remember what a table guest has in the API cart, so signing in as a member keeps it.
+  useEffect(() => {
+    if (user?.isGuest && cart?.branchId === branchId) guestApiCart.current = cart;
+  }, [user?.isGuest, cart, branchId]);
+
+  // Signed in (or a table guest): replay signed-out lines into the API cart, as brandfe does on login.
   useEffect(() => {
     // Wait for the stored signed-out lines, or a cold start while signed in would drop them.
-    if (!user || !branchId || !guestLoaded) return;
+    if (!user || !branchId || !guestLoaded || syncing.current) return;
     let cancelled = false;
+    const fromPhone = guest?.branchId === branchId ? guest.lines : [];
+    const fromGuest =
+      !user.isGuest && guestApiCart.current?.branchId === branchId ? requestsFromCart(guestApiCart.current) : [];
+    guestApiCart.current = null;
+
     (async () => {
-      const pending = guest?.branchId === branchId ? guest.lines : [];
-      if (pending.length && !syncing.current) {
-        syncing.current = true;
-        try {
-          let current = await getActiveCart(branchId);
-          for (const line of pending) {
-            current = await addCartItem({ ...line.request, ...(cartIdOf(current) ? { cartId: cartIdOf(current)! } : {}) }, branchId);
+      syncing.current = true;
+      try {
+        if (fromPhone.length || fromGuest.length) {
+          let cartId = cartIdOf(await getActiveCart(branchId).catch(() => null));
+          const send = async (request: AddItemDto) => {
+            const next = await addCartItem({ ...request, ...(cartId ? { cartId } : {}) }, branchId);
+            cartId = cartIdOf(next) ?? cartId;
+          };
+          let remaining = fromPhone;
+          for (const line of fromPhone) {
+            // One line at a time: a failure leaves only the unsent lines on the phone, never duplicates.
+            await send(line.request);
+            remaining = remaining.filter((l) => l.id !== line.id);
+            await persistGuest(remaining.length ? { branchId, lines: remaining } : null);
           }
-          await persistGuest(null);
-          if (!cancelled) setCart(current);
-          return;
-        } finally {
-          syncing.current = false;
+          for (const request of fromGuest) await send(request);
         }
+      } catch {
+        // Lines that did not go through stay on the phone for the next sign-in or branch visit.
+      } finally {
+        syncing.current = false;
       }
       if (!cancelled) await loadRemote().catch(() => undefined);
     })();
@@ -120,8 +141,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       try {
         setCart(await addCartItem({ ...line.request, ...(id ? { cartId: id } : {}) }, branchId));
       } catch (error) {
-        // A stale cart id (closed by an order elsewhere) is retried without it, like brandfe.
-        if (!id) throw error;
+        // A cart closed by an order elsewhere answers 404; only then retry without its id, like brandfe.
+        if (!id || !isAxiosError(error) || error.response?.status !== 404) throw error;
         setCart(await addCartItem(line.request, branchId));
       }
     },

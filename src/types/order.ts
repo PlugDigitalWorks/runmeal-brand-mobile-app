@@ -116,7 +116,7 @@ export interface CreateAddressInput {
   postalCode: string;
   street: string;
   buildingNumber: string;
-  apartmentNumber: string;
+  apartmentNumber?: string;
   latitude: number;
   longitude: number;
   phoneE164?: string;

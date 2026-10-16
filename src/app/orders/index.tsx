@@ -8,6 +8,7 @@ import { StatusPill } from '@/components/StatusPill';
 import { useBrand } from '@/context/BrandContext';
 import { formatMoney } from '@/lib/money';
 import { getMyOrders } from '@/services/order.service';
+import { Button } from '@/ui/Button';
 import { EmptyState } from '@/ui/EmptyState';
 import { colors, font, radius, space } from '@/theme';
 import type { Order } from '@/types/order';
@@ -18,10 +19,20 @@ export default function OrdersScreen() {
   const insets = useSafeAreaInsets();
   const { brand } = useBrand();
   const [orders, setOrders] = useState<Order[] | null>(null);
+  const [failed, setFailed] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
-    const all = await getMyOrders().catch(() => []);
+    let all: Order[];
+    try {
+      all = await getMyOrders();
+    } catch {
+      // Keep what is on screen; a failed refresh must not read as "no orders".
+      setFailed(true);
+      setOrders((current) => current ?? []);
+      return;
+    }
+    setFailed(false);
     setOrders(
       all
         .filter((order) => !brand || order.brandId === brand.brandId)
@@ -58,7 +69,14 @@ export default function OrdersScreen() {
           keyExtractor={(o) => o.id}
           contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 24 }]}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.primary} />}
-          ListEmptyComponent={<EmptyState icon={<ReceiptText size={32} color={colors.zinc300} />} title={t('orders.empty')} />}
+          ListHeaderComponent={failed && orders.length ? <Text style={styles.error}>{t('orders.loadError')}</Text> : undefined}
+          ListEmptyComponent={
+            <EmptyState
+              icon={<ReceiptText size={32} color={colors.zinc300} />}
+              title={failed ? t('orders.loadError') : t('orders.empty')}
+              action={failed ? <Button label={t('retry')} variant="outline" onPress={refresh} /> : undefined}
+            />
+          }
           renderItem={({ item }) => (
             <Pressable
               style={({ pressed }) => [styles.row, pressed && { opacity: 0.9 }]}
@@ -106,4 +124,5 @@ const styles = StyleSheet.create({
   number: { fontSize: font.base, fontWeight: '800', color: colors.zinc900 },
   date: { fontSize: font.small, color: colors.zinc500 },
   total: { fontSize: font.base, fontWeight: '800', color: colors.zinc900 },
+  error: { color: colors.destructive, fontSize: font.body, textAlign: 'center' },
 });

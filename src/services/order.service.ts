@@ -50,8 +50,9 @@ export async function createTablePayLaterOrder(
   return data.data;
 }
 
+/** GET /orders/customer spans every brand and pages at 10 by default; ask for the API's maximum. */
 export async function getMyOrders(): Promise<Order[]> {
-  const { data } = await api.get<ApiResponse<Order[] | { data: Order[] }>>('/orders/customer');
+  const { data } = await api.get<ApiResponse<Order[] | { data: Order[] }>>('/orders/customer', { params: { limit: 100 } });
   const payload = data.data;
   return Array.isArray(payload) ? payload : (payload?.data ?? []);
 }
