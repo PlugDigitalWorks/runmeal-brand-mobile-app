@@ -123,13 +123,16 @@ export default function MenuScreen() {
           ) : (
             <>
               <Text style={styles.title}>{t('menu.title')}</Text>
+              {/* One header row, as on home: the branch sits beside the title instead of under it. */}
+              <View style={styles.branch}>
+                <BranchChip />
+              </View>
               <Pressable onPress={() => setSearching(true)} hitSlop={8} accessibilityLabel={t('menu.search')}>
                 <Search size={22} color={colors.zinc700} />
               </Pressable>
             </>
           )}
         </View>
-        {!searching ? <BranchChip /> : null}
         <ScrollView
           ref={pillsRef}
           horizontal
@@ -209,7 +212,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.zinc200,
   },
-  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 36 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 36 },
+  branch: { flex: 1, flexDirection: 'row', minWidth: 0 },
   title: { fontSize: font.display, fontWeight: '800', color: colors.zinc900, letterSpacing: -0.5 },
   searchBox: {
     flex: 1,
