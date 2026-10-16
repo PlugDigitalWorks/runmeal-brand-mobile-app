@@ -35,7 +35,7 @@ export default function CheckoutScreen() {
   const { user } = useAuth();
   const { branch, menu } = useStorefront();
   const { journey } = useTable();
-  const { lines, summary, cartId, reload } = useCart();
+  const { lines, summary, cartId, loading: cartLoading, reload } = useCart();
   const currency = menu?.currency ?? branch?.currency ?? 'GBP';
   const cafeHost = brand?.primaryDomain ?? brand?.defaultDomain ?? '';
 
@@ -99,6 +99,8 @@ export default function CheckoutScreen() {
   const placeOrder = async () => {
     // A fast double tap lands before `busy` re-renders the button; the ref stops the second order.
     if (submitting.current) return;
+    // Lines from before sign-in (or from a table scan) are still being moved into the API cart.
+    if (!cartId && cartLoading) return;
     if (!branch || !brand || !currentType || !cartId) return setError(t('checkout.empty'));
     const tablePayLater = currentType === 'TABLE_ORDER' && currentTiming === 'payLater';
     if (!tablePayLater && !currentMethod) return setError(t('checkout.noMethods'));
@@ -291,7 +293,7 @@ export default function CheckoutScreen() {
 
       <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 12) }]}>
         {error ? <Text style={styles.error}>{error}</Text> : null}
-        <Button label={ctaLabel} trailing={formatMoney(summary.total, currency)} loading={busy} onPress={placeOrder} />
+        <Button label={ctaLabel} trailing={formatMoney(summary.total, currency)} loading={busy || (!cartId && cartLoading)} onPress={placeOrder} />
       </View>
     </View>
   );

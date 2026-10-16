@@ -59,7 +59,8 @@ export default function OrderDetailScreen() {
   };
 
   const currency = order?.currency ?? brand?.currency ?? 'GBP';
-  const leave = () => (placed ? router.replace('/home') : router.back());
+  // After checkout the stack holds cart → checkout → this; going home drops them all.
+  const leave = () => (placed ? router.dismissTo('/home') : router.back());
 
   return (
     <View style={styles.screen}>
@@ -130,7 +131,7 @@ export default function OrderDetailScreen() {
             </View>
           </View>
 
-          {placed ? <Button label={t('orders.backToMenu')} variant="outline" onPress={() => router.replace('/menu')} /> : null}
+          {placed ? <Button label={t('orders.backToMenu')} variant="outline" onPress={() => router.dismissTo('/menu')} /> : null}
         </ScrollView>
       )}
     </View>

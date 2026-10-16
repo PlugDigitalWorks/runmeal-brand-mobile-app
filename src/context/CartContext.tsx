@@ -48,6 +48,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [guest, setGuest] = useState<GuestCart | null>(null);
   const [guestLoaded, setGuestLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [replaying, setReplaying] = useState(false);
   const syncing = useRef(false);
   /** The table guest's API cart, carried over when that guest signs in as a member. */
   const guestApiCart = useRef<Cart | null>(null);
@@ -79,10 +80,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [branchId]);
 
-  // Remember what a table guest has in the API cart, so signing in as a member keeps it.
+  // Remember what a table guest has in the API cart right now, so signing in as a member keeps it.
+  // A paid or emptied cart, or a guest who left the table, leaves nothing to carry over.
   useEffect(() => {
-    if (user?.isGuest && cart?.branchId === branchId) guestApiCart.current = cart;
-  }, [user?.isGuest, cart, branchId]);
+    if (!user) guestApiCart.current = null;
+    else if (user.isGuest) guestApiCart.current = cart?.branchId === branchId ? cart : null;
+  }, [user, cart, branchId]);
+
+  // At a table every order goes through the API: signed-out lines open the table's guest session,
+  // and the sync below moves them into its cart.
+  useEffect(() => {
+    if (!journey || user || !guestLoaded || !branchId || guest?.branchId !== branchId || !guest.lines.length) return;
+    ensureSession().catch(() => undefined);
+  }, [journey, user, guestLoaded, branchId, guest, ensureSession]);
 
   // Signed in (or a table guest): replay signed-out lines into the API cart, as brandfe does on login.
   useEffect(() => {
@@ -96,6 +106,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     (async () => {
       syncing.current = true;
+      setReplaying(true);
       try {
         if (fromPhone.length || fromGuest.length) {
           let cartId = cartIdOf(await getActiveCart(branchId).catch(() => null));
@@ -118,6 +129,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         syncing.current = false;
       }
       if (!cancelled) await loadRemote().catch(() => undefined);
+      setReplaying(false);
     })();
     return () => {
       cancelled = true;
@@ -175,8 +187,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const summary = useMemo(() => summarize(lines, activeCart), [lines, activeCart]);
 
   const value = useMemo(
-    () => ({ lines, summary, cartId: cartIdOf(activeCart), loading, add, setQty, reload: loadRemote }),
-    [lines, summary, activeCart, loading, add, setQty, loadRemote],
+    () => ({ lines, summary, cartId: cartIdOf(activeCart), loading: loading || replaying, add, setQty, reload: loadRemote }),
+    [lines, summary, activeCart, loading, replaying, add, setQty, loadRemote],
   );
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

@@ -82,3 +82,46 @@ it('opens a guest session for a table order', async () => {
   expect(mockAuth.ensureSession).toHaveBeenCalled();
   expect(addCartItem).toHaveBeenCalledWith({ productId: 'p1', qty: 1 }, 'br1');
 });
+
+const storedLine = { id: 'g1', productId: 'p1', name: 'Latte', imageUrl: null, qty: 2, unitPrice: 3.9, lineTotal: 7.8, optionsText: '', note: null, request: { productId: 'p1', qty: 2 } };
+
+it("carries a table guest's cart over when the guest signs in as a member", async () => {
+  mockAuth.user = { id: 'guest', isGuest: true };
+  (getActiveCart as jest.Mock).mockResolvedValue(remoteCart);
+  const view = await render(<CartProvider><Probe onRender={capture} /></CartProvider>);
+  await waitFor(() => expect(cart.cartId).toBe('cart1'));
+  (getActiveCart as jest.Mock).mockResolvedValue(null);
+  mockAuth.user = { id: 'member' };
+  await view.rerender(<CartProvider><Probe onRender={capture} /></CartProvider>);
+  await waitFor(() => expect(addCartItem).toHaveBeenCalledWith({ productId: 'p1', qty: 1 }, 'br1'));
+});
+
+it('does not carry over a table guest cart that was already paid', async () => {
+  mockAuth.user = { id: 'guest', isGuest: true };
+  (getActiveCart as jest.Mock).mockResolvedValue(remoteCart);
+  const view = await render(<CartProvider><Probe onRender={capture} /></CartProvider>);
+  await waitFor(() => expect(cart.cartId).toBe('cart1'));
+  // The order closed the cart.
+  (getActiveCart as jest.Mock).mockResolvedValue(null);
+  await act(() => cart.reload());
+  expect(cart.cartId).toBeNull();
+  mockAuth.user = { id: 'member' };
+  await view.rerender(<CartProvider><Probe onRender={capture} /></CartProvider>);
+  await waitFor(() => expect(getActiveCart).toHaveBeenCalledTimes(3));
+  expect(addCartItem).not.toHaveBeenCalled();
+});
+
+it('opens the table guest session for lines added before the table scan', async () => {
+  await AsyncStorage.setItem('brand-scoped:guest-cart', JSON.stringify({ branchId: 'br1', lines: [storedLine] }));
+  mockTable.journey = { tableId: 't1' };
+  mockAuth.ensureSession.mockResolvedValue({ id: 'guest', isGuest: true });
+  await render(<CartProvider><Probe onRender={capture} /></CartProvider>);
+  await waitFor(() => expect(mockAuth.ensureSession).toHaveBeenCalledTimes(1));
+});
+
+it('leaves a signed-out cart alone away from a table', async () => {
+  await AsyncStorage.setItem('brand-scoped:guest-cart', JSON.stringify({ branchId: 'br1', lines: [storedLine] }));
+  await render(<CartProvider><Probe onRender={capture} /></CartProvider>);
+  await waitFor(() => expect(cart.summary.count).toBe(2));
+  expect(mockAuth.ensureSession).not.toHaveBeenCalled();
+});
