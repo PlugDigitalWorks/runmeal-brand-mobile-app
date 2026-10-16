@@ -1,17 +1,16 @@
 import { useMemo, useState } from 'react';
-import { Image as RNImage, SectionList, StyleSheet, Text, TextInput, View } from 'react-native';
+import { SectionList, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Search } from 'lucide-react-native';
 import { BrandRow } from '@/components/BrandRow';
+import { RunmealLogo } from '@/components/RunmealLogo';
 import { useBrand } from '@/context/BrandContext';
 import { BRAND_DIRECTORY, searchDirectory } from '@/lib/brand-directory';
 import { resolveBrandByHost } from '@/services/brand.service';
 import { colors, font, radius, space } from '@/theme';
 import type { AppBrand, DirectoryEntry } from '@/types/brand';
-
-const RUNMEAL_ICON = require('@/../assets/images/icon.png');
 
 type Row = { kind: 'recent'; brand: AppBrand } | { kind: 'directory'; entry: DirectoryEntry };
 
@@ -62,7 +61,7 @@ export default function BrandsScreen() {
         contentContainerStyle={styles.list}
         ListHeaderComponent={
           <View style={styles.header}>
-            <RNImage source={RUNMEAL_ICON} style={styles.appIcon} />
+            <RunmealLogo size={36} />
             <Text style={styles.title}>{t('brands.title')}</Text>
             <View style={styles.searchBox}>
               <Search size={18} color={colors.zinc400} />
@@ -113,7 +112,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   list: { paddingHorizontal: space.lg, paddingBottom: 40 },
   header: { paddingTop: space.lg, paddingBottom: space.sm, gap: space.md },
-  appIcon: { width: 52, height: 52, borderRadius: 14 },
   title: { fontSize: font.display + 2, fontWeight: '800', color: colors.zinc900, letterSpacing: -0.5 },
   searchBox: {
     flexDirection: 'row',

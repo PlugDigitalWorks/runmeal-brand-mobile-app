@@ -28,7 +28,7 @@ const config: ExpoConfig = {
     package: 'com.runmeal.app',
     adaptiveIcon: {
       backgroundColor: '#FFFFFF',
-      foregroundImage: './assets/images/icon.png',
+      foregroundImage: './assets/images/adaptive-icon.png',
     },
     predictiveBackGestureEnabled: false,
     intentFilters: [

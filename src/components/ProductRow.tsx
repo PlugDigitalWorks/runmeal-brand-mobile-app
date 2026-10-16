@@ -5,7 +5,7 @@ import { Price } from '@/ui/Price';
 import { colors, font, radius } from '@/theme';
 import type { Product } from '@/types/product';
 
-const FALLBACK = require('@/../assets/images/icon.png');
+const FALLBACK = require('@/../assets/images/runmeal-mark.png');
 
 type Props = { product: Product; currency: string; onPress: () => void };
 

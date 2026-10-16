@@ -23,7 +23,7 @@ import { QuantityStepper } from '@/ui/QuantityStepper';
 import { colors, font, radius, space } from '@/theme';
 import type { OptionGroup, Product } from '@/types/product';
 
-const FALLBACK = require('@/../assets/images/icon.png');
+const FALLBACK = require('@/../assets/images/runmeal-mark.png');
 
 /** brandfe's ProductDetailModal as a bottom sheet: hero image, option cards, note, stepper and CTA. */
 export default function ProductSheet() {
