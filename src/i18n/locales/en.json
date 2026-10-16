@@ -1,0 +1,26 @@
+{
+  "brands": {
+    "title": "Choose your cafe",
+    "search": "Search cafes",
+    "recent": "Recently visited",
+    "all": "All cafes",
+    "empty": "No cafes found",
+    "resolveError": "This cafe can't be opened right now. Try again later.",
+    "scan": "Scan the table QR"
+  },
+  "link": {
+    "opening": "Opening…",
+    "notFound": "This link doesn't belong to a cafe.",
+    "tableNotFound": "This table QR is no longer valid.",
+    "brandMismatch": "This QR belongs to another cafe.",
+    "goToBrands": "Choose a cafe"
+  },
+  "scan": {
+    "title": "Scan QR",
+    "permission": "Camera access is needed to scan the table QR.",
+    "allow": "Allow",
+    "invalid": "This QR doesn't belong to a Runmeal cafe."
+  },
+  "header": { "switchBrand": "Switch cafe" },
+  "table": { "welcome": "Welcome to table {{table}}" }
+}

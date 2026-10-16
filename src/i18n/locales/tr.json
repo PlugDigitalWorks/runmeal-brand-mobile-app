@@ -1,0 +1,26 @@
+{
+  "brands": {
+    "title": "Cafeni seç",
+    "search": "Cafe ara",
+    "recent": "Son ziyaret edilenler",
+    "all": "Tüm cafeler",
+    "empty": "Cafe bulunamadı",
+    "resolveError": "Bu cafe şu an açılamıyor. Daha sonra tekrar dene.",
+    "scan": "Masadaki QR'ı okut"
+  },
+  "link": {
+    "opening": "Açılıyor…",
+    "notFound": "Bu link bir cafeye ait değil.",
+    "tableNotFound": "Bu masa QR'ı artık geçerli değil.",
+    "brandMismatch": "Bu QR başka bir cafeye ait.",
+    "goToBrands": "Cafe seç"
+  },
+  "scan": {
+    "title": "QR okut",
+    "permission": "Masadaki QR kodu okutmak için kamera izni gerekiyor.",
+    "allow": "İzin ver",
+    "invalid": "Bu QR bir Runmeal cafesine ait değil."
+  },
+  "header": { "switchBrand": "Cafe değiştir" },
+  "table": { "welcome": "{{table}} masasına hoş geldin" }
+}
