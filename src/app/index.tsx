@@ -1,17 +1,26 @@
-import { Text, View, StyleSheet } from "react-native";
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, View } from 'react-native';
+import { Redirect, type Href } from 'expo-router';
+import { useBrand } from '@/context/BrandContext';
+import { consumeInstallReferrerUrl } from '@/lib/install-referrer';
+import { toLinkRoute } from '@/lib/links';
 
+/** Cold start without a link: install referrer → last cafe → cafe picker. */
 export default function Index() {
-  return (
-    <View style={styles.container}>
-      <Text>Edit src/app/index.tsx to edit this screen.</Text>
-    </View>
-  );
-}
+  const { brand, ready } = useBrand();
+  const [referrerUrl, setReferrerUrl] = useState<string | null | undefined>(undefined);
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+  useEffect(() => {
+    consumeInstallReferrerUrl().then(setReferrerUrl);
+  }, []);
+
+  if (!ready || referrerUrl === undefined) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+  if (referrerUrl) return <Redirect href={toLinkRoute(referrerUrl) as Href} />;
+  return <Redirect href={brand ? '/menu' : '/brands'} />;
+}
