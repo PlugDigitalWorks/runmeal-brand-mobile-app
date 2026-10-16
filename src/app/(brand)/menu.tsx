@@ -19,6 +19,7 @@ export default function MenuScreen() {
   if (!menu || menu.brandId !== brand?.brandId) return <ActivityIndicator style={{ marginTop: 32 }} />;
   return (
     <FlatList
+      contentInsetAdjustmentBehavior="automatic"
       data={menu.categories}
       keyExtractor={(c) => c.id}
       renderItem={({ item }) => (

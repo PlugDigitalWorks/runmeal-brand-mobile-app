@@ -7,7 +7,7 @@ export function BrandRow({ name, logoUrl, busy, onPress }: Props) {
   return (
     <Pressable style={styles.row} onPress={onPress} disabled={busy} accessibilityRole="button">
       {logoUrl ? (
-        <Image source={{ uri: logoUrl }} style={styles.logo} contentFit="cover" />
+        <Image source={{ uri: logoUrl }} style={styles.logo} contentFit="contain" />
       ) : (
         <View style={[styles.logo, styles.placeholder]}>
           <Text style={styles.initial}>{name.charAt(0).toLocaleUpperCase('tr')}</Text>
@@ -21,7 +21,7 @@ export function BrandRow({ name, logoUrl, busy, onPress }: Props) {
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12, paddingHorizontal: 16 },
-  logo: { width: 44, height: 44, borderRadius: 22 },
+  logo: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#fff' },
   placeholder: { backgroundColor: '#f5a623', alignItems: 'center', justifyContent: 'center' },
   initial: { color: '#fff', fontWeight: '700', fontSize: 18 },
   name: { flex: 1, fontSize: 16, fontWeight: '500' },

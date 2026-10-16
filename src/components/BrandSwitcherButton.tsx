@@ -18,7 +18,7 @@ export function BrandSwitcherButton() {
       accessibilityLabel={t('header.switchBrand')}
     >
       {brand.logoUrl ? (
-        <Image source={{ uri: brand.logoUrl }} style={styles.logo} />
+        <Image source={{ uri: brand.logoUrl }} style={styles.logo} contentFit="contain" />
       ) : (
         <View style={[styles.logo, styles.placeholder]} />
       )}
@@ -34,7 +34,7 @@ export function BrandSwitcherButton() {
 
 const styles = StyleSheet.create({
   button: { flexDirection: 'row', alignItems: 'center', gap: 8, maxWidth: 240 },
-  logo: { width: 32, height: 32, borderRadius: 16 },
+  logo: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#fff' },
   placeholder: { backgroundColor: '#f5a623' },
   name: { fontSize: 16, fontWeight: '600' },
   hint: { fontSize: 11, color: '#888' },
