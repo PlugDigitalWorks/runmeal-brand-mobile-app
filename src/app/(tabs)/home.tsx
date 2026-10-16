@@ -23,11 +23,8 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.screen}>
-      <BrandHeader right={<RewardsButton />} />
+      <BrandHeader center={<BranchChip />} right={<RewardsButton />} />
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.padded}>
-          <BranchChip />
-        </View>
 
         {banner ? (
           <View style={styles.padded}>
