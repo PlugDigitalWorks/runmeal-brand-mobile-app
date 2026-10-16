@@ -5,14 +5,14 @@ import { House, QrCode, ShoppingCart, User, UtensilsCrossed } from 'lucide-react
 import { useBrand } from '@/context/BrandContext';
 import { colors, shadow } from '@/theme';
 
-/** Kahve Dünyası / Starbucks style bar: the member QR (loyalty card) sits raised in the middle. */
-function MemberQrTabButton() {
+/** Kahve Dünyası / Starbucks style bar: the table QR scanner sits raised in the middle. */
+function ScanTabButton() {
   const { t } = useTranslation();
   return (
     <View style={styles.qrSlot}>
       <Pressable
         style={({ pressed }) => [styles.qrButton, pressed && { transform: [{ scale: 0.95 }] }]}
-        onPress={() => router.push('/rewards')}
+        onPress={() => router.push('/scan')}
         accessibilityRole="button"
         accessibilityLabel={t('tabs.scan')}
       >
@@ -43,7 +43,7 @@ export default function TabsLayout() {
         name="menu"
         options={{ title: t('tabs.menu'), tabBarIcon: ({ color }) => <UtensilsCrossed size={22} color={color} /> }}
       />
-      <Tabs.Screen name="qr" options={{ title: t('tabs.scan'), tabBarButton: () => <MemberQrTabButton /> }} />
+      <Tabs.Screen name="qr" options={{ title: t('tabs.scan'), tabBarButton: () => <ScanTabButton /> }} />
       <Tabs.Screen
         name="cart"
         options={{ title: t('tabs.cart'), tabBarIcon: ({ color }) => <ShoppingCart size={22} color={color} /> }}

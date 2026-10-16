@@ -26,7 +26,7 @@
   "tabs": {
     "home": "Home",
     "menu": "Menu",
-    "scan": "My QR",
+    "scan": "Scan QR",
     "cart": "Cart",
     "account": "Account"
   },
@@ -34,10 +34,6 @@
     "categories": "Categories",
     "popular": "Popular",
     "seeMenu": "See all",
-    "rewardsTitle": "Your loyalty card",
-    "rewardsBody": "Collect stamps in store and get your gift at the till with your QR code.",
-    "tableTitle": "At a table?",
-    "tableBody": "Scan the QR and we'll bring your order over.",
     "greeting": {
       "morning": "Good morning",
       "afternoon": "Good afternoon",
@@ -104,9 +100,10 @@
     "cardStatus": "Sign in to collect stamps."
   },
   "scan": {
-    "title": "Scan QR",
+    "title": "Scan the table QR",
     "permission": "Camera access is needed to scan the table QR.",
     "allow": "Allow",
-    "invalid": "This QR doesn't belong to a Runmeal cafe."
+    "invalid": "This QR doesn't belong to a Runmeal cafe.",
+    "hint": "Line up the table QR code inside the frame."
   }
 }

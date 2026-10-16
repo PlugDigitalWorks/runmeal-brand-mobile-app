@@ -2,9 +2,10 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ChevronRight, Coffee, Plus, QrCode } from 'lucide-react-native';
+import { ChevronRight, Plus } from 'lucide-react-native';
 import { BrandHeader } from '@/components/BrandHeader';
 import { BranchChip } from '@/components/BranchChip';
+import { RewardsButton } from '@/components/RewardsButton';
 import { useBrand } from '@/context/BrandContext';
 import { useStorefront } from '@/context/StorefrontContext';
 import { greetingFor } from '@/lib/greeting';
@@ -23,7 +24,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.screen}>
-      <BrandHeader />
+      <BrandHeader right={<RewardsButton />} />
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.hello}>
           <Text style={styles.greeting}>{t(`home.greeting.${greetingFor(new Date().getHours())}`)}</Text>
@@ -38,39 +39,6 @@ export default function HomeScreen() {
             <Image source={{ uri: banner }} style={styles.banner} contentFit="cover" transition={200} />
           </View>
         ) : null}
-
-        <View style={[styles.padded, { gap: 12 }]}>
-          <Pressable
-            style={({ pressed }) => [styles.rewardsCard, pressed && styles.pressed]}
-            onPress={() => router.push('/rewards')}
-            accessibilityRole="button"
-          >
-            <View style={styles.seal} />
-            <View style={styles.rewardsIcon}>
-              <Coffee size={24} color={colors.primaryForeground} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.rewardsTitle}>{t('home.rewardsTitle')}</Text>
-              <Text style={styles.rewardsBody}>{t('home.rewardsBody')}</Text>
-            </View>
-            <ChevronRight size={20} color="rgba(255,255,255,0.5)" />
-          </Pressable>
-
-          <Pressable
-            style={({ pressed }) => [styles.tableCard, pressed && styles.pressed]}
-            onPress={() => router.push('/scan')}
-            accessibilityRole="button"
-          >
-            <View style={styles.tableIcon}>
-              <QrCode size={20} color={colors.primary} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.tableTitle}>{t('home.tableTitle')}</Text>
-              <Text style={styles.tableBody}>{t('home.tableBody')}</Text>
-            </View>
-            <ChevronRight size={20} color={colors.zinc400} />
-          </Pressable>
-        </View>
 
         <SectionHeader title={t('home.categories')} action={t('home.seeMenu')} onAction={() => router.navigate('/menu')} />
         <View style={styles.grid}>
@@ -152,57 +120,6 @@ const styles = StyleSheet.create({
   greeting: { fontSize: font.display, fontWeight: '800', color: colors.zinc900, letterSpacing: -0.5 },
   ask: { fontSize: font.base, color: colors.zinc500 },
   banner: { width: '100%', aspectRatio: 3, borderRadius: radius.xl, backgroundColor: colors.accent },
-  rewardsCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    padding: 16,
-    borderRadius: radius.xl,
-    backgroundColor: colors.zinc900,
-    overflow: 'hidden',
-  },
-  seal: {
-    position: 'absolute',
-    right: -40,
-    top: -50,
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    borderWidth: 8,
-    borderStyle: 'dashed',
-    borderColor: 'rgba(255,255,255,0.06)',
-  },
-  rewardsIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  rewardsTitle: { color: colors.primaryForeground, fontSize: font.base, fontWeight: '700' },
-  rewardsBody: { color: 'rgba(255,255,255,0.6)', fontSize: font.small + 1, marginTop: 2, lineHeight: 18 },
-  tableCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    padding: 14,
-    borderRadius: radius.xl,
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    ...shadow.card,
-  },
-  tableIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.lg,
-    backgroundColor: colors.orange50,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tableTitle: { color: colors.zinc900, fontSize: font.base, fontWeight: '700' },
-  tableBody: { color: colors.zinc500, fontSize: font.small + 1, marginTop: 2 },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'baseline',

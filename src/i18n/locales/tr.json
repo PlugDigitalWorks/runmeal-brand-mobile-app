@@ -26,7 +26,7 @@
   "tabs": {
     "home": "Ana Sayfa",
     "menu": "Menü",
-    "scan": "QR'ım",
+    "scan": "QR Okut",
     "cart": "Sepet",
     "account": "Hesap"
   },
@@ -34,10 +34,6 @@
     "categories": "Kategoriler",
     "popular": "Öne çıkanlar",
     "seeMenu": "Tümünü gör",
-    "rewardsTitle": "Sadakat kartın",
-    "rewardsBody": "Mağazada damga topla, hediyeni kasada QR kodunla al.",
-    "tableTitle": "Masadasın?",
-    "tableBody": "QR'ı okut, siparişin masana gelsin.",
     "greeting": {
       "morning": "Günaydın",
       "afternoon": "İyi günler",
@@ -104,9 +100,10 @@
     "cardStatus": "Giriş yap, damga topla."
   },
   "scan": {
-    "title": "QR okut",
+    "title": "Masa QR'ını okut",
     "permission": "Masadaki QR kodu okutmak için kamera izni gerekiyor.",
     "allow": "İzin ver",
-    "invalid": "Bu QR bir Runmeal cafesine ait değil."
+    "invalid": "Bu QR bir Runmeal cafesine ait değil.",
+    "hint": "Masadaki QR kodu çerçeveye hizala."
   }
 }
