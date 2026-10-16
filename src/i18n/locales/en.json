@@ -34,12 +34,6 @@
     "categories": "Categories",
     "popular": "Popular",
     "seeMenu": "See all",
-    "greeting": {
-      "morning": "Good morning",
-      "afternoon": "Good afternoon",
-      "evening": "Good evening"
-    },
-    "ask": "What are you having today?",
     "menuCta": "See the full menu"
   },
   "branch": {

@@ -8,7 +8,6 @@ import { BranchChip } from '@/components/BranchChip';
 import { RewardsButton } from '@/components/RewardsButton';
 import { useBrand } from '@/context/BrandContext';
 import { useStorefront } from '@/context/StorefrontContext';
-import { greetingFor } from '@/lib/greeting';
 import { Price } from '@/ui/Price';
 import { Skeleton } from '@/ui/Skeleton';
 import { colors, font, radius, shadow, space } from '@/theme';
@@ -26,10 +25,6 @@ export default function HomeScreen() {
     <View style={styles.screen}>
       <BrandHeader right={<RewardsButton />} />
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.hello}>
-          <Text style={styles.greeting}>{t(`home.greeting.${greetingFor(new Date().getHours())}`)}</Text>
-          <Text style={styles.ask}>{t('home.ask')}</Text>
-        </View>
         <View style={styles.padded}>
           <BranchChip />
         </View>
@@ -116,9 +111,6 @@ const styles = StyleSheet.create({
   content: { paddingTop: space.lg, paddingBottom: 56, gap: space.lg },
   padded: { paddingHorizontal: space.lg },
   pressed: { opacity: 0.92, transform: [{ scale: 0.99 }] },
-  hello: { paddingHorizontal: space.lg, gap: 2 },
-  greeting: { fontSize: font.display, fontWeight: '800', color: colors.zinc900, letterSpacing: -0.5 },
-  ask: { fontSize: font.base, color: colors.zinc500 },
   banner: { width: '100%', aspectRatio: 3, borderRadius: radius.xl, backgroundColor: colors.accent },
   sectionHeader: {
     flexDirection: 'row',
