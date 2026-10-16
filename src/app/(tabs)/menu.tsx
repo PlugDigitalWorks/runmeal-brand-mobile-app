@@ -169,7 +169,10 @@ export default function MenuScreen() {
         >
           {visible.map((c) => (
             <View key={c.id} onLayout={(e) => (sectionY.current[c.id] = e.nativeEvent.layout.y)} style={styles.section}>
-              <Text style={styles.sectionTitle}>{c.name}</Text>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>{c.name}</Text>
+                <Text style={styles.sectionCount}>{c.products?.length ?? 0}</Text>
+              </View>
               <View style={styles.card}>
                 {(c.products ?? []).map((p, index) => (
                   <View key={p.id}>
@@ -193,6 +196,11 @@ export default function MenuScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
   header: {
+    zIndex: 1,
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
     backgroundColor: colors.card,
     paddingHorizontal: space.lg,
     gap: 10,
@@ -200,7 +208,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.zinc200,
   },
   titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 36 },
-  title: { fontSize: font.display, fontWeight: '800', color: colors.zinc900 },
+  title: { fontSize: font.display, fontWeight: '800', color: colors.zinc900, letterSpacing: -0.5 },
   searchBox: {
     flex: 1,
     flexDirection: 'row',
@@ -215,7 +223,9 @@ const styles = StyleSheet.create({
   pills: { gap: 8, paddingVertical: 10 },
   list: { padding: space.lg, paddingBottom: 48, gap: space.xl },
   section: { gap: 10 },
-  sectionTitle: { fontSize: font.title + 2, fontWeight: '800', color: colors.zinc800 },
+  sectionHeader: { flexDirection: 'row', alignItems: 'baseline', gap: 8 },
+  sectionTitle: { fontSize: font.title + 2, fontWeight: '800', color: colors.zinc800, letterSpacing: -0.3 },
+  sectionCount: { fontSize: font.body, fontWeight: '600', color: colors.zinc400 },
   card: {
     backgroundColor: colors.card,
     borderRadius: radius.xl,

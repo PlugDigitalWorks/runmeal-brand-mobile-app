@@ -5,7 +5,6 @@ import { resolveBrandByHost } from '@/services/brand.service';
 
 const mockSelectBrand = jest.fn().mockResolvedValue(undefined);
 const mockReplace = jest.fn();
-const mockPush = jest.fn();
 
 const recentBrand = {
   brandId: 'r1',
@@ -28,7 +27,7 @@ jest.mock('@/lib/brand-directory', () => ({
   ],
 }));
 jest.mock('expo-router', () => ({
-  router: { replace: (p: string) => mockReplace(p), push: (p: string) => mockPush(p) },
+  router: { replace: (p: string) => mockReplace(p) },
 }));
 jest.mock('@/context/BrandContext', () => ({
   useBrand: () => ({ brand: null, recent: [recentBrand], ready: true, selectBrand: mockSelectBrand }),
@@ -77,10 +76,4 @@ it('shows an error when a cafe cannot be resolved', async () => {
     expect(screen.getByText('Bu cafe şu an açılamıyor. Daha sonra tekrar dene.')).toBeTruthy(),
   );
   expect(mockSelectBrand).not.toHaveBeenCalled();
-});
-
-it('opens the QR scanner', async () => {
-  await render(<BrandsScreen />);
-  await fireEvent.press(screen.getByText("Masadaki QR'ı okut"));
-  expect(mockPush).toHaveBeenCalledWith('/scan');
 });

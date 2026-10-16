@@ -17,6 +17,7 @@ export default function RootLayout() {
           <Stack.Screen name="link" />
           <Stack.Screen name="order" />
           <Stack.Screen name="scan" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="rewards" options={{ presentation: 'modal' }} />
           <Stack.Screen
             name="product/[id]"
             options={{

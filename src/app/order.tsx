@@ -36,7 +36,7 @@ export default function OrderScreen() {
           <Text style={styles.table}>{t('table.welcome', { table: table.tableLabel })}</Text>
           <View style={styles.line}>
             <Utensils size={15} color={colors.primary} />
-            <Text style={styles.lineText}>{t('home.tableBody')}</Text>
+            <Text style={styles.lineText}>{t('table.served')}</Text>
           </View>
           <View style={styles.chips}>
             {table.checkoutOptions.payNow ? (

@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { ChevronRight, Globe, User } from 'lucide-react-native';
 import { useBrand } from '@/context/BrandContext';
+import { chooseLanguage } from '@/i18n';
 import { colors, font, radius, space } from '@/theme';
 
 const LANGUAGES = [
@@ -42,7 +43,7 @@ export default function AccountScreen() {
         {LANGUAGES.map(({ code, label }) => {
           const on = i18n.language === code;
           return (
-            <Pressable key={code} style={[styles.segmentItem, on && styles.segmentOn]} onPress={() => i18n.changeLanguage(code)}>
+            <Pressable key={code} style={[styles.segmentItem, on && styles.segmentOn]} onPress={() => chooseLanguage(code)}>
               {on ? <Globe size={14} color={colors.zinc900} /> : null}
               <Text style={[styles.segmentText, on && { color: colors.zinc900 }]}>{label}</Text>
             </Pressable>
@@ -56,7 +57,7 @@ export default function AccountScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
   content: { paddingHorizontal: space.lg, paddingBottom: 40, gap: 12 },
-  title: { fontSize: font.display, fontWeight: '800', color: colors.zinc900, marginBottom: 4 },
+  title: { fontSize: font.display, fontWeight: '800', color: colors.zinc900, marginBottom: 4, letterSpacing: -0.5 },
   notice: {
     flexDirection: 'row',
     alignItems: 'center',

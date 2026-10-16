@@ -5,8 +5,7 @@
     "recent": "Son ziyaret edilenler",
     "all": "Tüm cafeler",
     "empty": "Cafe bulunamadı",
-    "resolveError": "Bu cafe şu an açılamıyor. Daha sonra tekrar dene.",
-    "scan": "Masadaki QR'ı okut"
+    "resolveError": "Bu cafe şu an açılamıyor. Daha sonra tekrar dene."
   },
   "link": {
     "opening": "Açılıyor…",
@@ -15,33 +14,37 @@
     "brandMismatch": "Bu QR başka bir cafeye ait.",
     "goToBrands": "Cafe seç"
   },
-  "scan": {
-    "title": "QR okut",
-    "permission": "Masadaki QR kodu okutmak için kamera izni gerekiyor.",
-    "allow": "İzin ver",
-    "invalid": "Bu QR bir Runmeal cafesine ait değil."
-  },
   "header": {
     "switchBrand": "Cafe değiştir"
   },
   "table": {
     "welcome": "{{table}} masasına hoş geldin",
     "payNow": "Şimdi öde",
-    "payLater": "Sonra öde"
+    "payLater": "Sonra öde",
+    "served": "Siparişin masana gelir."
   },
   "tabs": {
     "home": "Ana Sayfa",
     "menu": "Menü",
-    "scan": "QR Okut",
+    "scan": "QR'ım",
     "cart": "Sepet",
     "account": "Hesap"
   },
   "home": {
-    "tableTitle": "Masadasın?",
-    "tableBody": "QR'ı okut, siparişin masana gelsin.",
     "categories": "Kategoriler",
     "popular": "Öne çıkanlar",
-    "seeMenu": "Tümünü gör"
+    "seeMenu": "Tümünü gör",
+    "rewardsTitle": "Sadakat kartın",
+    "rewardsBody": "Mağazada damga topla, hediyeni kasada QR kodunla al.",
+    "tableTitle": "Masadasın?",
+    "tableBody": "QR'ı okut, siparişin masana gelsin.",
+    "greeting": {
+      "morning": "Günaydın",
+      "afternoon": "İyi günler",
+      "evening": "İyi akşamlar"
+    },
+    "ask": "Bugün ne istersin?",
+    "menuCta": "Tüm menüyü gör"
   },
   "branch": {
     "choose": "Şube seç",
@@ -87,5 +90,23 @@
     "language": "Dil",
     "signInSoon": "Giriş, siparişlerin ve ödüllerin yakında burada."
   },
-  "retry": "Tekrar dene"
+  "retry": "Tekrar dene",
+  "rewards": {
+    "title": "Sadakat Kartlarım",
+    "subtitle": "Mağazada damga topla, hediyeni kasada QR kodunla al.",
+    "cardTitle": "Sadakat kartı",
+    "guest": "Misafir",
+    "qrLocked": "Giriş yapınca QR kodun burada görünecek.",
+    "signInBody": "Damga kazanmak veya hediyeni kullanmak için giriş yap; kasada bu QR kodu okutacaksın.",
+    "signIn": "Giriş yap",
+    "signInSoon": "Giriş bir sonraki adımda eklenecek.",
+    "qrPagePermanent": "Bu kod sana özeldir ve değişmez. Satış temsilcisi tüm kartlarını bu kodla görür.",
+    "cardStatus": "Giriş yap, damga topla."
+  },
+  "scan": {
+    "title": "QR okut",
+    "permission": "Masadaki QR kodu okutmak için kamera izni gerekiyor.",
+    "allow": "İzin ver",
+    "invalid": "Bu QR bir Runmeal cafesine ait değil."
+  }
 }

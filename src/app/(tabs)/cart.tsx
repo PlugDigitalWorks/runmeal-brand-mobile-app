@@ -16,7 +16,8 @@ export default function CartScreen() {
       <Text style={styles.title}>{t('tabs.cart')}</Text>
       <View style={{ flex: 1, justifyContent: 'center' }}>
         <EmptyState
-          icon={<ShoppingCart size={32} color={colors.zinc300} />}
+          icon={<ShoppingCart size={40} color={colors.primary} />}
+          tone="brand"
           title={t('cart.emptyTitle')}
           body={t('cart.emptyBody')}
           action={<Button label={t('cart.goToMenu')} onPress={() => router.navigate('/menu')} style={{ marginTop: 8, alignSelf: 'stretch' }} />}
@@ -28,5 +29,5 @@ export default function CartScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background, paddingHorizontal: space.lg },
-  title: { fontSize: font.display, fontWeight: '800', color: colors.zinc900 },
+  title: { fontSize: font.display, fontWeight: '800', color: colors.zinc900, letterSpacing: -0.5 },
 });
