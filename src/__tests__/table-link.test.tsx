@@ -23,7 +23,7 @@ jest.mock('@/context/TableContext', () => ({ useTable: () => mockTable }));
 jest.mock('@/context/StorefrontContext', () => ({ useStorefront: () => mockStorefront }));
 jest.mock('@/services/table.service', () => ({ resolveQr: jest.fn() }));
 
-const table = { tableId: 't1', tableLabel: '1', branchId: 'br1', brandId: 'b1', checkoutOptions: { payNow: true, payLater: false } };
+const table = { tableId: 't1', tableLabel: 'Table 1', branchId: 'br1', brandId: 'b1', checkoutOptions: { payNow: true, payLater: false } };
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -53,7 +53,8 @@ it('shows the distance away from a table', async () => {
 });
 
 it('shows the table instead of the distance at a table, and offers to leave it', async () => {
-  mockTable.journey = { branchId: 'br1', tableLabel: '1' };
+  // The label is shown exactly as the API sends it.
+  mockTable.journey = { branchId: 'br1', tableLabel: 'Table 1' };
   const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
   await render(<BranchChip />);
   expect(screen.getByText('Richmond · Table 1')).toBeTruthy();
