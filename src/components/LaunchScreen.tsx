@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import Animated, {
   cancelAnimation,
@@ -17,6 +17,13 @@ import { useStorefront } from '@/context/StorefrontContext';
 import { LAUNCH_MAX_MS, launchSettled } from '@/lib/launch';
 
 const PULSE = { duration: 750, easing: Easing.inOut(Easing.quad) };
+
+// An explicit box at the native splash's size: the image is fitted inside it,
+// so it can never draw at the file's own pixel size. The ratio comes from the
+// image itself, so another brand's logo keeps its shape.
+const SPLASH = Image.resolveAssetSource(BRAND_SPLASH);
+const LOGO_WIDTH = BRAND.splashLogoWidth;
+const LOGO_HEIGHT = SPLASH?.width && SPLASH?.height ? Math.round((LOGO_WIDTH * SPLASH.height) / SPLASH.width) : LOGO_WIDTH;
 
 /**
  * Takes over from the native splash with the same logo in the same place, and
@@ -63,7 +70,9 @@ export function LaunchScreen() {
       onLayout={() => SplashScreen.hideAsync().catch(() => undefined)}
       accessibilityLabel={BRAND.name}
     >
-      <Animated.Image source={BRAND_SPLASH} style={[styles.logo, logoStyle]} resizeMode="contain" />
+      <Animated.View style={[styles.logo, logoStyle]}>
+        <Image source={BRAND_SPLASH} style={styles.logoImage} resizeMode="contain" />
+      </Animated.View>
     </Animated.View>
   );
 }
@@ -76,5 +85,6 @@ const styles = StyleSheet.create({
     backgroundColor: BRAND.colors.splashBackground,
     zIndex: 1000,
   },
-  logo: { width: BRAND.splashLogoWidth, aspectRatio: 1200 / 323 },
+  logo: { width: LOGO_WIDTH, height: LOGO_HEIGHT },
+  logoImage: { width: '100%', height: '100%' },
 });
