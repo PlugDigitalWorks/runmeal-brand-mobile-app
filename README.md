@@ -14,7 +14,7 @@ Everything that makes this app one brand's app lives in `brand/`:
 
 | File | What it sets |
 | --- | --- |
-| `brand/brand.json` | Display name, Expo slug, URL scheme, iOS bundle ID, Android package, the brand's web `host`, the `linkHosts` whose links and table QR codes the app opens, the colors, and which sign-in options are on (`signIn.apple`: Sign in with Apple on iOS, through `POST /auth/apple/native`) |
+| `brand/brand.json` | Display name, Expo slug, URL scheme, iOS bundle ID, Android package, Apple Developer team ID (`appleTeamId`), the brand's web `host`, the `linkHosts` whose links and table QR codes the app opens, the colors, and which sign-in options are on (`signIn.apple`: Sign in with Apple on iOS, through `POST /auth/apple/native`) |
 | `brand/assets/icon.png` | App icon, 1024×1024, opaque |
 | `brand/assets/adaptive-icon.png` | Android adaptive icon foreground, 1024×1024, transparent, artwork inside the middle 66% |
 | `brand/assets/splash-icon.png` | Splash screen image, transparent; shown `splashLogoWidth` points wide, and pulses while the app loads |

@@ -4,6 +4,7 @@
   "scheme": "dharmacoffee",
   "bundleIdentifier": "uk.dharmacoffee.app",
   "androidPackage": "uk.dharmacoffee.app",
+  "appleTeamId": "T776LGPKWZ",
   "host": "order.dharmacoffee.uk",
   "linkHosts": ["order.dharmacoffee.uk"],
   "splashLogoWidth": 220,

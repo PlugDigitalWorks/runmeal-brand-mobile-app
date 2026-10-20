@@ -28,6 +28,8 @@ const config: ExpoConfig = {
   userInterfaceStyle: 'automatic',
   ios: {
     bundleIdentifier: brand.bundleIdentifier,
+    // The paid team that signs store and TestFlight builds; a personal-team build picks its own in Xcode.
+    appleTeamId: personalTeam ? undefined : brand.appleTeamId,
     supportsTablet: false,
     associatedDomains,
     usesAppleSignIn,
