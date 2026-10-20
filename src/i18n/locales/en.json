@@ -76,15 +76,13 @@
     "items_one": "{{count}} item",
     "items_other": "{{count}} items",
     "updateFailed": "Couldn't update your cart.",
-    "tableBanner": "Ordering for table {{table}}",
-    "signInToOrder": "Sign in to order"
+    "tableBanner": "Ordering for table {{table}}"
   },
   "account": {
     "title": "Account",
     "signIn": "Sign in or create an account",
     "signOut": "Sign out",
     "orders": "Your orders",
-    "guest": "Table guest",
     "profile": "Profile"
   },
   "retry": "Try again",
@@ -150,7 +148,8 @@
     "codeInvalid": "Enter the 6-digit code.",
     "passwordRequired": "Enter your password.",
     "failed": "Something went wrong. Try again.",
-    "stayed": "You'll stay signed in on this phone."
+    "stayed": "You'll stay signed in on this phone.",
+    "signInToOrder": "Sign in to add items to your order. We'll email you a 6-digit code."
   },
   "checkout": {
     "title": "Checkout",

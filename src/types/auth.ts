@@ -7,8 +7,6 @@ export interface User {
   fullName?: string;
   role: string;
   phoneNumber?: string;
-  /** Set on the throwaway account a table journey creates (brandfe stamps it the same way). */
-  isGuest?: boolean;
 }
 
 export interface SessionTokens {

@@ -1,7 +1,7 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { onSessionExpired } from '@/lib/api';
 import { clearSession, loadSession, saveSession, saveUser } from '@/lib/session';
-import { createGuestSession, getProfile, logout } from '@/services/auth.service';
+import { getProfile, logout } from '@/services/auth.service';
 import type { AuthResponse, User } from '@/types/auth';
 
 type Status = 'loading' | 'signedIn' | 'signedOut';
@@ -9,12 +9,10 @@ type Status = 'loading' | 'signedIn' | 'signedOut';
 type AuthValue = {
   user: User | null;
   status: Status;
-  /** Signed in with a real account (a table guest is a session, not a member). */
+  /** Signed in: required to add to the cart and to order. */
   isMember: boolean;
   signIn: (auth: AuthResponse) => Promise<void>;
   signOut: () => Promise<void>;
-  /** A session for the table journey: the member's if signed in, else a fresh guest. */
-  ensureSession: () => Promise<User>;
 };
 
 const AuthContext = createContext<AuthValue | undefined>(undefined);
@@ -22,7 +20,6 @@ const AuthContext = createContext<AuthValue | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [status, setStatus] = useState<Status>('loading');
-  const guestRequest = useRef<Promise<User> | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -40,9 +37,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const profile = await getProfile();
         if (cancelled) return;
-        const next = { ...profile, isGuest: session.user.isGuest };
-        setUser(next);
-        await saveUser(next);
+        setUser(profile);
+        await saveUser(profile);
       } catch {
         // Offline or a transient error: keep the stored session.
       }
@@ -78,22 +74,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setStatus('signedOut');
   }, []);
 
-  const ensureSession = useCallback(async () => {
-    if (user) return user;
-    guestRequest.current ??= createGuestSession()
-      .then(async (auth) => {
-        await signIn(auth);
-        return auth.user;
-      })
-      .finally(() => {
-        guestRequest.current = null;
-      });
-    return guestRequest.current;
-  }, [user, signIn]);
-
   const value = useMemo(
-    () => ({ user, status, isMember: !!user && !user.isGuest, signIn, signOut, ensureSession }),
-    [user, status, signIn, signOut, ensureSession],
+    () => ({ user, status, isMember: !!user, signIn, signOut }),
+    [user, status, signIn, signOut],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

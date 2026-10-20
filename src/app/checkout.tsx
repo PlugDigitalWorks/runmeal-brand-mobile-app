@@ -86,7 +86,7 @@ export default function CheckoutScreen() {
   // Addresses come back from the add-address modal, so reload on focus.
   useFocusEffect(
     useCallback(() => {
-      if (!user || user.isGuest) return;
+      if (!user) return;
       getAddresses()
         .then((list) => {
           setAddresses(list);

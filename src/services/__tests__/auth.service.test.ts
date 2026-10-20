@@ -1,5 +1,5 @@
 import { api } from '@/lib/api';
-import { createGuestSession, loginWithPassword, registerWithOtp, requestOtpLogin, verifyOtp } from '../auth.service';
+import { loginWithPassword, registerWithOtp, requestOtpLogin, verifyOtp } from '../auth.service';
 
 jest.mock('@/lib/api', () => ({ AUTH_CLIENT: 'user', api: { post: jest.fn(), get: jest.fn() } }));
 const post = api.post as jest.Mock;
@@ -30,7 +30,3 @@ it('registers without a password so the account is confirmed by code', async () 
   expect(post).toHaveBeenCalledWith('/auth/register', { email: 'a@b.co', firstName: 'Ada', lastName: 'Lovelace' });
 });
 
-it('marks a table guest session as a guest', async () => {
-  post.mockResolvedValue({ data: { status: true, message: 'ok', data: { accessToken: 'g', user } } });
-  await expect(createGuestSession()).resolves.toEqual({ accessToken: 'g', user: { ...user, isGuest: true } });
-});

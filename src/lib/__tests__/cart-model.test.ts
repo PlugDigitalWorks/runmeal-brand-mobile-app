@@ -1,14 +1,6 @@
 import type { Cart } from '@/types/cart';
 import type { OptionGroup, Product } from '@/types/product';
-import {
-  addGuestLine,
-  buildAddItem,
-  cartLinesFromBackend,
-  requestsFromCart,
-  guestLineFromSelection,
-  setGuestQty,
-  summarize,
-} from '../cart-model';
+import { buildAddItem, cartLinesFromBackend, summarize } from '../cart-model';
 
 const milk: OptionGroup = {
   id: 'milk',
@@ -47,26 +39,6 @@ it('maps selections like brandfe: optionId for single groups, optionIds for mult
   expect(buildAddItem(latte, [], {}, 1, '   ')).toEqual({ productId: 'p1', qty: 1 });
 });
 
-it('prices a guest line with its options and merges identical lines', () => {
-  const line = guestLineFromSelection(latte, [milk, extras], { milk: ['oat'], extras: ['shot'] }, 1, '');
-  expect(line.unitPrice).toBeCloseTo(5.1);
-  expect(line.optionsText).toBe('Oat, Extra shot');
-
-  let lines = addGuestLine([], line);
-  lines = addGuestLine(lines, { ...line, id: 'other', qty: 2 });
-  expect(lines).toHaveLength(1);
-  expect(lines[0].qty).toBe(3);
-
-  lines = addGuestLine(lines, guestLineFromSelection(latte, [milk], { milk: ['whole'] }, 1, ''));
-  expect(lines).toHaveLength(2);
-});
-
-it('removes a guest line at zero', () => {
-  const line = guestLineFromSelection(latte, [], {}, 2, '');
-  expect(setGuestQty([line], line.id, 1)[0].qty).toBe(1);
-  expect(setGuestQty([line], line.id, 0)).toEqual([]);
-});
-
 it('reads backend cart lines and totals', () => {
   const cart: Cart = {
     id: 'cart1',
@@ -96,48 +68,3 @@ it('reads backend cart lines and totals', () => {
   expect(summarize(lines, null)).toEqual({ count: 2, subtotal: 11.2, discount: 0, total: 11.2 });
 });
 
-it('turns an API cart back into add-item requests (a table guest signing in keeps their cart)', () => {
-  const cart: Cart = {
-    id: 'c',
-    brandId: 'b',
-    branchId: 'br',
-    items: [
-      {
-        id: 'i1',
-        productId: 'p1',
-        productName: 'Latte',
-        price: 5,
-        qty: 2,
-        imgUrl: null,
-        note: 'hot',
-        options: [
-          { type: 'SINGLE', groupId: 'milk', groupName: 'Milk', selections: [{ action: 'SELECT', optionId: 'oat', optionName: 'Oat', priceDelta: 0.5 }] },
-          {
-            type: 'MULTI',
-            groupId: 'extras',
-            groupName: 'Extras',
-            selections: [
-              { action: 'SELECT', optionId: 'shot', optionName: 'Shot', priceDelta: 0.7 },
-              { action: 'SELECT', optionId: 'syrup', optionName: 'Syrup', priceDelta: 0.4 },
-            ],
-          },
-          { type: 'INGREDIENT', groupId: 'swap', groupName: 'Swap', selections: [{ action: 'REMOVE', optionId: 'x', optionName: 'x', priceDelta: 0 }] },
-        ],
-      },
-      { id: 'i2', productId: 'p2', productName: 'Tea', price: 3, qty: 1, imgUrl: null },
-    ],
-  };
-  expect(requestsFromCart(cart)).toEqual([
-    {
-      productId: 'p1',
-      qty: 2,
-      note: 'hot',
-      options: [
-        { groupId: 'milk', optionId: 'oat' },
-        { groupId: 'extras', optionIds: ['shot', 'syrup'] },
-      ],
-    },
-    { productId: 'p2', qty: 1 },
-  ]);
-  expect(requestsFromCart(null)).toEqual([]);
-});

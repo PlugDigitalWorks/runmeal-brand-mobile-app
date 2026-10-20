@@ -5,7 +5,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { QrCode, ShoppingCart } from 'lucide-react-native';
 import { CartLineRow } from '@/components/CartLineRow';
-import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { useStorefront } from '@/context/StorefrontContext';
 import { useTable } from '@/context/TableContext';
@@ -21,7 +20,6 @@ export default function CartScreen() {
   const { lines, summary, setQty } = useCart();
   const { menu, branch } = useStorefront();
   const { journey } = useTable();
-  const { user } = useAuth();
   const [busyLine, setBusyLine] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const currency = menu?.currency ?? branch?.currency ?? 'GBP';
@@ -38,11 +36,6 @@ export default function CartScreen() {
     }
   };
 
-  // A table journey orders as the table's guest; storefront orders need an account.
-  const goToCheckout = () => {
-    if (user || journey) router.push('/checkout');
-    else router.push({ pathname: '/login', params: { next: '/checkout' } });
-  };
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top + 8 }]}>
@@ -85,9 +78,9 @@ export default function CartScreen() {
           </ScrollView>
           <View style={{ paddingBottom: space.md }}>
             <Button
-              label={user || journey ? t('cart.checkout') : t('cart.signInToOrder')}
+              label={t('cart.checkout')}
               trailing={formatMoney(summary.total, currency)}
-              onPress={goToCheckout}
+              onPress={() => router.push('/checkout')}
             />
           </View>
         </>

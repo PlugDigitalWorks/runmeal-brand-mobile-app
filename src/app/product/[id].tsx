@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Check, X } from 'lucide-react-native';
+import { useAuth } from '@/context/AuthContext';
 import { useBrand } from '@/context/BrandContext';
 import { useCart } from '@/context/CartContext';
 import { useStorefront } from '@/context/StorefrontContext';
@@ -26,7 +27,6 @@ import { colors, font, radius, space } from '@/theme';
 import type { OptionGroup, Product } from '@/types/product';
 import { BRAND_LOGO } from '@brand';
 
-
 /** brandfe's ProductDetailModal as a bottom sheet: hero image, option cards, note, stepper and CTA. */
 export default function ProductSheet() {
   const { t } = useTranslation();
@@ -42,6 +42,9 @@ export default function ProductSheet() {
   const [message, setMessage] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const cart = useCart();
+  const { isMember } = useAuth();
+  // Set when Add sends a signed-out customer to sign in; the same choice is added once they are in.
+  const addAfterSignIn = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -86,6 +89,12 @@ export default function ProductSheet() {
       setMessage(t('product.noBranch'));
       return;
     }
+    // Unlike the website, this app orders only for signed-in customers.
+    if (!isMember) {
+      addAfterSignIn.current = true;
+      router.push({ pathname: '/login', params: { reason: 'order' } });
+      return;
+    }
     setAdding(true);
     setMessage(null);
     try {
@@ -97,6 +106,14 @@ export default function ProductSheet() {
       setAdding(false);
     }
   };
+
+  const resumeAdd = useEffectEvent(() => {
+    addAfterSignIn.current = false;
+    onAdd();
+  });
+  useEffect(() => {
+    if (isMember && addAfterSignIn.current) resumeAdd();
+  }, [isMember]);
 
   const close = (
     <Pressable style={styles.close} onPress={() => router.back()} accessibilityLabel="Close" hitSlop={8}>

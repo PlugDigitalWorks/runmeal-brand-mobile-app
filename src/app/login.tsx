@@ -27,7 +27,7 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export default function LoginScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { next } = useLocalSearchParams<{ next?: string }>();
+  const { next, reason } = useLocalSearchParams<{ next?: string; reason?: 'order' }>();
   const { brand } = useBrand();
   const { signIn } = useAuth();
 
@@ -122,7 +122,7 @@ export default function LoginScreen() {
 
         {step === 'email' || step === 'password' ? (
           <>
-            <Text style={styles.body}>{step === 'email' ? t('auth.subtitle') : t('auth.stayed')}</Text>
+            <Text style={styles.body}>{step === 'email' ? (reason === 'order' ? t('auth.signInToOrder') : t('auth.subtitle')) : t('auth.stayed')}</Text>
             <Field label={t('auth.email')}>
               <TextInput
                 testID="login-email"

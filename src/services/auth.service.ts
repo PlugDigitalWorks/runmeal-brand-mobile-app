@@ -31,13 +31,6 @@ export async function verifyOtp(email: string, code: string): Promise<AuthRespon
   return unwrap(data);
 }
 
-/** Throwaway customer for a QR table journey, exactly as brandfe opens one. */
-export async function createGuestSession(): Promise<AuthResponse> {
-  const { data } = await api.post<Envelope<AuthResponse>>('/auth/guest-session', {});
-  const auth = unwrap(data);
-  return { ...auth, user: { ...auth.user, isGuest: true } };
-}
-
 export async function getProfile(): Promise<User> {
   const { data } = await api.get<Envelope<User>>('/profile');
   return unwrap(data);

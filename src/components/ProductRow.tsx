@@ -6,7 +6,6 @@ import { colors, font, radius } from '@/theme';
 import type { Product } from '@/types/product';
 import { BRAND_LOGO } from '@brand';
 
-
 type Props = { product: Product; currency: string; onPress: () => void };
 
 /** brandfe's menu row (thumbnail, bold name, two-line description, price) with the add button on the thumb side. */

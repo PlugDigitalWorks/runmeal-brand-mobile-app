@@ -31,7 +31,7 @@ export default function AccountScreen() {
           <View style={styles.noticeIcon}>
             <User size={22} color={colors.primary} />
           </View>
-          <Text style={styles.noticeText}>{user?.isGuest ? t('account.guest') : t('auth.subtitle')}</Text>
+          <Text style={styles.noticeText}>{t('auth.subtitle')}</Text>
           <Button label={t('account.signIn')} onPress={() => router.push('/login')} style={{ alignSelf: 'stretch' }} />
         </View>
       )}

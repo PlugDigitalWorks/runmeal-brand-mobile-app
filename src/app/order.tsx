@@ -4,7 +4,6 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { CreditCard, QrCode, Utensils, Wallet, X } from 'lucide-react-native';
-import { useAuth } from '@/context/AuthContext';
 import { useTable } from '@/context/TableContext';
 import { resolveQr } from '@/services/table.service';
 import { Button } from '@/ui/Button';
@@ -17,7 +16,6 @@ export default function OrderScreen() {
   const insets = useSafeAreaInsets();
   const { qr } = useLocalSearchParams<{ qr?: string }>();
   const { startJourney, endJourney } = useTable();
-  const { user, signOut } = useAuth();
   const [table, setTable] = useState<TableResolveResponse | null>(null);
 
   useEffect(() => {
@@ -30,10 +28,8 @@ export default function OrderScreen() {
       .catch(() => setTable(null));
   }, [qr, startJourney]);
 
-  // The table's throwaway guest account ends with the table, as brandfe's journey does.
   const leave = async () => {
     await endJourney();
-    if (user?.isGuest) await signOut();
     router.replace('/home');
   };
 

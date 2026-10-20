@@ -7,7 +7,6 @@ import { formatMoney } from '@/lib/money';
 import { colors, font, radius } from '@/theme';
 import { BRAND_LOGO } from '@brand';
 
-
 type Props = { line: CartLine; currency: string; busy?: boolean; onQty: (qty: number) => void };
 
 /** brandfe's cart row: name, options, note, a stepper whose minus becomes a bin at one, and the line price. */
