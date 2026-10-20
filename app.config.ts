@@ -1,4 +1,5 @@
 import type { ExpoConfig } from 'expo/config';
+import { withEntitlementsPlist, type ConfigPlugin } from 'expo/config-plugins';
 import brand from './brand/brand.json';
 
 // A free (personal) Apple team cannot sign Associated Domains or Sign in with Apple,
@@ -52,7 +53,6 @@ const config: ExpoConfig = {
   },
   plugins: [
     'expo-router',
-    ...(usesAppleSignIn ? ['expo-apple-authentication'] : []),
     [
       'expo-splash-screen',
       {
@@ -79,4 +79,15 @@ const config: ExpoConfig = {
   },
 };
 
-export default config;
+/**
+ * Expo applies expo-apple-authentication's plugin by itself, and that plugin
+ * always adds the Sign in with Apple entitlement. Take it out again when this
+ * build should not have it, or a free Apple team cannot sign the app.
+ */
+const withoutAppleSignIn: ConfigPlugin = (base) =>
+  withEntitlementsPlist(base, (mod) => {
+    delete mod.modResults['com.apple.developer.applesignin'];
+    return mod;
+  });
+
+export default usesAppleSignIn ? config : withoutAppleSignIn(config);
