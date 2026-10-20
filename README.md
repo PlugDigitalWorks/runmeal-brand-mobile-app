@@ -1,4 +1,4 @@
-# Single-brand app
+# Runmeal brand mobile app
 
 The mobile storefront for one Runmeal brand, currently **Dharma Coffee**. It
 is the multi-cafe `brand-mobile-app` with the cafe picker removed: the app opens
