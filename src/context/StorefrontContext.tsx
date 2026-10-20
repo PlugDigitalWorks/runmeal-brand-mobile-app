@@ -1,4 +1,5 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useBrand } from '@/context/BrandContext';
 import { BRAND_SCOPED_PREFIX } from '@/lib/brand-store';
@@ -18,6 +19,8 @@ type StorefrontValue = {
   branch: Branch | null;
   selectBranch: (branch: Branch) => Promise<void>;
   location: Coordinates | null;
+  /** Asks for location again; on success the list re-sorts by distance. */
+  locate: () => Promise<boolean>;
   menu: Menu | null;
   categories: MenuCategory[];
   menuStatus: Status;
@@ -35,6 +38,16 @@ function visibleCategories(menu: Menu | null): MenuCategory[] {
     .filter((c) => c.products.length > 0);
 }
 
+/** One more try after a short pause, so a dropped connection at launch doesn't leave the storefront empty. */
+async function withRetry<T>(load: () => Promise<T>): Promise<T> {
+  try {
+    return await load();
+  } catch {
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    return load();
+  }
+}
+
 export function StorefrontProvider({ children }: { children: React.ReactNode }) {
   const { brand } = useBrand();
   const [branches, setBranches] = useState<RankedBranch[]>([]);
@@ -44,24 +57,30 @@ export function StorefrontProvider({ children }: { children: React.ReactNode }) 
   const [menu, setMenu] = useState<Menu | null>(null);
   const [menuStatus, setMenuStatus] = useState<Status>('loading');
   const [attempt, setAttempt] = useState(0);
+  const [allBranches, setAllBranches] = useState<Branch[]>([]);
+  // True while the branch was picked for the customer; a nearer one may replace it once location arrives.
+  const autoPicked = useRef(false);
 
   useEffect(() => {
     if (!brand) return;
     let cancelled = false;
     (async () => {
       try {
+        // Location never holds up or breaks the list: without it, branches go by name.
         const [list, me, storedId] = await Promise.all([
-          listBrandBranches(brand.brandId),
+          withRetry(() => listBrandBranches(brand.brandId)),
           getUserLocation(),
-          AsyncStorage.getItem(BRANCH_KEY),
+          AsyncStorage.getItem(BRANCH_KEY).catch(() => null),
         ]);
         if (cancelled) return;
         const ranked = sortBranches(list, me);
+        setAllBranches(list);
         setLocation(me);
         setBranches(ranked);
         const stored = ranked.find((r) => r.branch.id === storedId)?.branch;
-        // A remembered choice wins; else the nearest one, or the only one.
-        setBranch(stored ?? (me || ranked.length === 1 ? (ranked[0]?.branch ?? null) : null));
+        // A remembered choice wins; else the nearest one, or the first by name without location.
+        autoPicked.current = !stored;
+        setBranch(stored ?? ranked[0]?.branch ?? null);
         setBranchStatus('ready');
       } catch {
         if (!cancelled) setBranchStatus('error');
@@ -76,7 +95,7 @@ export function StorefrontProvider({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     if (!brand) return;
     let cancelled = false;
-    getMenu(brand.brandId, branchId)
+    withRetry(() => getMenu(brand.brandId, branchId))
       .then((m) => {
         if (cancelled) return;
         setMenu(m);
@@ -88,7 +107,27 @@ export function StorefrontProvider({ children }: { children: React.ReactNode }) 
     };
   }, [brand, branchId, attempt]);
 
+  const locate = useCallback(async () => {
+    const me = await getUserLocation();
+    if (!me) return false;
+    const ranked = sortBranches(allBranches, me);
+    setLocation(me);
+    setBranches(ranked);
+    if (autoPicked.current && ranked[0]) setBranch(ranked[0].branch);
+    return true;
+  }, [allBranches]);
+
+  // Back from Settings with location turned on: sort by distance without a restart.
+  useEffect(() => {
+    if (location || !allBranches.length) return;
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') locate();
+    });
+    return () => subscription.remove();
+  }, [location, allBranches.length, locate]);
+
   const selectBranch = useCallback(async (next: Branch) => {
+    autoPicked.current = false;
     setBranch(next);
     await AsyncStorage.setItem(BRANCH_KEY, next.id);
   }, []);
@@ -101,8 +140,8 @@ export function StorefrontProvider({ children }: { children: React.ReactNode }) 
 
   const categories = useMemo(() => visibleCategories(menu), [menu]);
   const value = useMemo(
-    () => ({ branches, branch, selectBranch, location, menu, categories, menuStatus, branchStatus, reload }),
-    [branches, branch, selectBranch, location, menu, categories, menuStatus, branchStatus, reload],
+    () => ({ branches, branch, selectBranch, location, locate, menu, categories, menuStatus, branchStatus, reload }),
+    [branches, branch, selectBranch, location, locate, menu, categories, menuStatus, branchStatus, reload],
   );
   return <StorefrontContext.Provider value={value}>{children}</StorefrontContext.Provider>;
 }

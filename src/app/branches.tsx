@@ -1,9 +1,10 @@
 import { Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Check, MapPin, Navigation } from 'lucide-react-native';
+import { Check, LocateFixed, MapPin, Navigation } from 'lucide-react-native';
 import { useStorefront } from '@/context/StorefrontContext';
 import { directionsUrl, formatDistance } from '@/lib/branches';
+import { canAskForLocation } from '@/lib/location';
 import { Button } from '@/ui/Button';
 import { colors, font, radius, space } from '@/theme';
 import type { Branch } from '@/types/branch';
@@ -11,7 +12,15 @@ import type { Branch } from '@/types/branch';
 /** Branch picker sheet, styled after brandfe's BranchSelector cards. */
 export default function BranchesSheet() {
   const { t } = useTranslation();
-  const { branches, branch: selected, selectBranch, location, branchStatus, reload } = useStorefront();
+  const { branches, branch: selected, selectBranch, location, locate, branchStatus, reload } = useStorefront();
+
+  // The system prompt while it can still show; after a "Don't allow", only Settings can turn it on.
+  const turnOnLocation = async () => {
+    if (await canAskForLocation()) {
+      if (await locate()) return;
+    }
+    Linking.openSettings();
+  };
 
   const choose = async (branch: Branch) => {
     await selectBranch(branch);
@@ -21,7 +30,13 @@ export default function BranchesSheet() {
   return (
     <ScrollView style={styles.sheet} contentContainerStyle={styles.content}>
       <Text style={styles.title}>{t('branch.title')}</Text>
-      {!location ? <Text style={styles.hint}>{t('branch.locationOff')}</Text> : null}
+      {!location && branches.length ? (
+        <Pressable style={styles.locationCard} onPress={turnOnLocation} accessibilityRole="button">
+          <LocateFixed size={18} color={colors.primary} />
+          <Text style={styles.locationText}>{t('branch.locationOff')}</Text>
+          <Text style={styles.locationAction}>{t('branch.turnOnLocation')}</Text>
+        </Pressable>
+      ) : null}
       {branchStatus === 'error' ? (
         <>
           <Text style={styles.hint}>{t('branch.error')}</Text>
@@ -95,6 +110,16 @@ const styles = StyleSheet.create({
   content: { padding: space.xl, paddingTop: space.xxl + 4, gap: 12, paddingBottom: 40 },
   title: { fontSize: font.heading, fontWeight: '800', color: colors.zinc900 },
   hint: { fontSize: font.body, color: colors.zinc500 },
+  locationCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    padding: 12,
+    borderRadius: radius.lg,
+    backgroundColor: colors.accent,
+  },
+  locationText: { flex: 1, fontSize: font.small + 1, color: colors.zinc700, lineHeight: 18 },
+  locationAction: { fontSize: font.small + 1, fontWeight: '700', color: colors.primary },
   card: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: radius.lg, borderWidth: 1 },
   cardOn: { borderColor: colors.primary, backgroundColor: colors.orange50 },
   cardOff: { borderColor: colors.zinc200, backgroundColor: colors.card },

@@ -31,9 +31,10 @@
     "pickup": "Pickup",
     "table": "Table",
     "delivery": "Delivery",
-    "locationOff": "Location is off, so branches are sorted by name.",
+    "locationOff": "Turn on location to see the nearest branch first.",
     "error": "Couldn't load branches.",
-    "directionsTo": "Directions to {{name}}"
+    "directionsTo": "Directions to {{name}}",
+    "turnOnLocation": "Turn on"
   },
   "menu": {
     "title": "Menu",
