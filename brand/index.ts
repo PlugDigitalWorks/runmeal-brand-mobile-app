@@ -11,3 +11,6 @@ export const BRAND: BrandConfig = config;
 
 /** The brand's wordmark, shown in the header and on the sign-in screen. */
 export const BRAND_LOGO = require('./assets/logo.png');
+
+/** The native splash image, redrawn by the launch screen at `splashLogoWidth`. */
+export const BRAND_SPLASH = require('./assets/splash-icon.png');

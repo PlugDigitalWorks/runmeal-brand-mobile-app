@@ -17,7 +17,7 @@ Everything that makes this app one brand's app lives in `brand/`:
 | `brand/brand.json` | Display name, Expo slug, URL scheme, iOS bundle ID, Android package, the brand's web `host`, the `linkHosts` whose links and table QR codes the app opens, and the colors |
 | `brand/assets/icon.png` | App icon, 1024×1024, opaque |
 | `brand/assets/adaptive-icon.png` | Android adaptive icon foreground, 1024×1024, transparent, artwork inside the middle 66% |
-| `brand/assets/splash-icon.png` | Splash screen image, transparent |
+| `brand/assets/splash-icon.png` | Splash screen image, transparent; shown `splashLogoWidth` points wide, and pulses while the app loads |
 | `brand/assets/logo.png` | Wordmark used in the header, on the sign-in screen and as the product image placeholder |
 | `brand/assets/favicon.png` | Web favicon |
 

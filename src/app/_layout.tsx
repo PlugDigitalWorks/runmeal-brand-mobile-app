@@ -1,12 +1,17 @@
 import '@/i18n';
 import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
+import { LaunchScreen } from '@/components/LaunchScreen';
 import { AuthProvider } from '@/context/AuthContext';
 import { BrandProvider } from '@/context/BrandContext';
 import { CartProvider } from '@/context/CartContext';
 import { StorefrontProvider } from '@/context/StorefrontContext';
 import { TableProvider } from '@/context/TableContext';
 import { colors } from '@/theme';
+
+// The launch screen hides the native splash once it has drawn the same logo over it.
+SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
 const sheet = {
   presentation: 'formSheet' as const,
@@ -43,6 +48,7 @@ export default function RootLayout() {
                   options={{ ...sheet, sheetAllowedDetents: [0.6, 0.92], contentStyle: { backgroundColor: colors.background } }}
                 />
               </Stack>
+              <LaunchScreen />
             </CartProvider>
           </TableProvider>
         </StorefrontProvider>

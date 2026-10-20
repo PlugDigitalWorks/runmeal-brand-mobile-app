@@ -6,6 +6,7 @@
   "androidPackage": "uk.dharmacoffee.app",
   "host": "order.dharmacoffee.uk",
   "linkHosts": ["order.dharmacoffee.uk"],
+  "splashLogoWidth": 220,
   "colors": {
     "primary": "#f5a623",
     "primaryForeground": "#ffffff",
