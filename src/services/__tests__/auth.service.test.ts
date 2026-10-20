@@ -1,5 +1,5 @@
 import { api } from '@/lib/api';
-import { loginWithPassword, registerWithOtp, requestOtpLogin, verifyOtp } from '../auth.service';
+import { loginWithApple, loginWithPassword, registerWithOtp, requestOtpLogin, verifyOtp } from '../auth.service';
 
 jest.mock('@/lib/api', () => ({ AUTH_CLIENT: 'user', api: { post: jest.fn(), get: jest.fn() } }));
 const post = api.post as jest.Mock;
@@ -30,3 +30,10 @@ it('registers without a password so the account is confirmed by code', async () 
   expect(post).toHaveBeenCalledWith('/auth/register', { email: 'a@b.co', firstName: 'Ada', lastName: 'Lovelace' });
 });
 
+
+it('signs in with Apple through the native route, as a customer', async () => {
+  post.mockResolvedValue({ data: { status: true, message: 'ok', data: { accessToken: 'a', refreshToken: 'r', sid: 's', user } } });
+  const input = { identityToken: 'jwt', authorizationCode: 'code', nonce: 'raw', firstName: 'Ada' };
+  await expect(loginWithApple(input)).resolves.toMatchObject({ accessToken: 'a', refreshToken: 'r', sid: 's' });
+  expect(post).toHaveBeenCalledWith('/auth/apple/native', { ...input, client: 'user' });
+});

@@ -31,6 +31,21 @@ export async function verifyOtp(email: string, code: string): Promise<AuthRespon
   return unwrap(data);
 }
 
+/** What the iOS Apple sheet returned, plus the raw nonce whose SHA-256 hex digest Apple signed. */
+export type AppleSignInInput = {
+  identityToken: string;
+  authorizationCode: string;
+  nonce: string;
+  firstName?: string;
+  lastName?: string;
+};
+
+/** runmeal-api POST /auth/apple/native: answers like /auth/verify-otp in body mode. */
+export async function loginWithApple(input: AppleSignInInput): Promise<AuthResponse> {
+  const { data } = await api.post<Envelope<AuthResponse>>('/auth/apple/native', { ...input, client: AUTH_CLIENT });
+  return unwrap(data);
+}
+
 export async function getProfile(): Promise<User> {
   const { data } = await api.get<Envelope<User>>('/profile');
   return unwrap(data);

@@ -1,9 +1,12 @@
 import type { ExpoConfig } from 'expo/config';
 import brand from './brand/brand.json';
 
-// A free (personal) Apple team cannot sign the Associated Domains capability, so a
-// build for a personal iPhone sets NO_ASSOCIATED_DOMAINS=1. Store builds keep it.
-const associatedDomains = process.env.NO_ASSOCIATED_DOMAINS === '1' ? undefined : brand.linkHosts.map((host) => `applinks:${host}`);
+// A free (personal) Apple team cannot sign Associated Domains or Sign in with Apple,
+// so a build for a personal iPhone sets PERSONAL_TEAM=1. Store builds keep both.
+const personalTeam = process.env.PERSONAL_TEAM === '1';
+const associatedDomains = personalTeam ? undefined : brand.linkHosts.map((host) => `applinks:${host}`);
+// The app shows the Apple button only when this capability is in the build.
+const usesAppleSignIn = brand.signIn.apple && !personalTeam;
 
 // Paths the app opens once the brand's web host serves the link verification files.
 const androidLinkData = brand.linkHosts.flatMap((host) => [
@@ -26,6 +29,7 @@ const config: ExpoConfig = {
     bundleIdentifier: brand.bundleIdentifier,
     supportsTablet: false,
     associatedDomains,
+    usesAppleSignIn,
   },
   android: {
     package: brand.androidPackage,
@@ -48,6 +52,7 @@ const config: ExpoConfig = {
   },
   plugins: [
     'expo-router',
+    ...(usesAppleSignIn ? ['expo-apple-authentication'] : []),
     [
       'expo-splash-screen',
       {

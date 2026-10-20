@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react-native';
 import { Recaptcha } from '@/components/Recaptcha';
+import { AppleSignInButton } from '@/components/AppleSignInButton';
 import { BrandWordmark } from '@/components/BrandLogo';
 import { useAuth } from '@/context/AuthContext';
 import { useBrand } from '@/context/BrandContext';
@@ -123,6 +124,18 @@ export default function LoginScreen() {
         {step === 'email' || step === 'password' ? (
           <>
             <Text style={styles.body}>{step === 'email' ? (reason === 'order' ? t('auth.signInToOrder') : t('auth.subtitle')) : t('auth.stayed')}</Text>
+            {step === 'email' ? (
+              <AppleSignInButton
+                busy={busy}
+                dividerLabel={t('auth.orEmail')}
+                onSignedIn={async (auth) => {
+                  setError(null);
+                  await signIn(auth);
+                  finish();
+                }}
+                onError={(e) => setError(apiErrorMessage(e, t('auth.appleFailed')))}
+              />
+            ) : null}
             <Field label={t('auth.email')}>
               <TextInput
                 testID="login-email"

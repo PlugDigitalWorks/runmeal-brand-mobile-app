@@ -14,7 +14,7 @@ Everything that makes this app one brand's app lives in `brand/`:
 
 | File | What it sets |
 | --- | --- |
-| `brand/brand.json` | Display name, Expo slug, URL scheme, iOS bundle ID, Android package, the brand's web `host`, the `linkHosts` whose links and table QR codes the app opens, and the colors |
+| `brand/brand.json` | Display name, Expo slug, URL scheme, iOS bundle ID, Android package, the brand's web `host`, the `linkHosts` whose links and table QR codes the app opens, the colors, and which sign-in options are on (`signIn.apple`: Sign in with Apple on iOS, through `POST /auth/apple/native`) |
 | `brand/assets/icon.png` | App icon, 1024×1024, opaque |
 | `brand/assets/adaptive-icon.png` | Android adaptive icon foreground, 1024×1024, transparent, artwork inside the middle 66% |
 | `brand/assets/splash-icon.png` | Splash screen image, transparent; shown `splashLogoWidth` points wide, and pulses while the app loads |
@@ -44,10 +44,10 @@ npx expo lint
 ```
 
 To run on your own iPhone with a free (personal) Apple team, which cannot sign
-Universal Links, generate the iOS project without them:
+Universal Links or Sign in with Apple, generate the iOS project without them:
 
 ```bash
-NO_ASSOCIATED_DOMAINS=1 npx expo prebuild -p ios --clean
+PERSONAL_TEAM=1 npx expo prebuild -p ios --clean
 ```
 
 Run a plain `npx expo prebuild -p ios --clean` again before a store build.
