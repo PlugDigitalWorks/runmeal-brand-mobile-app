@@ -28,6 +28,10 @@ const config: ExpoConfig = {
   userInterfaceStyle: 'automatic',
   ios: {
     bundleIdentifier: brand.bundleIdentifier,
+    // Raise for every TestFlight / App Store upload of the same version.
+    buildNumber: '1',
+    // Only HTTPS and the OS's own crypto: no export compliance questions on each upload.
+    config: { usesNonExemptEncryption: false },
     // The paid team that signs store and TestFlight builds; a personal-team build picks its own in Xcode.
     appleTeamId: personalTeam ? undefined : brand.appleTeamId,
     supportsTablet: false,
@@ -36,6 +40,7 @@ const config: ExpoConfig = {
   },
   android: {
     package: brand.androidPackage,
+    versionCode: 1,
     adaptiveIcon: {
       backgroundColor: brand.colors.iconBackground,
       foregroundImage: './brand/assets/adaptive-icon.png',
