@@ -1,23 +1,42 @@
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, MapPin } from 'lucide-react-native';
+import { ChevronDown, MapPin, QrCode } from 'lucide-react-native';
 import { useStorefront } from '@/context/StorefrontContext';
+import { useTable } from '@/context/TableContext';
 import { formatDistance } from '@/lib/branches';
 import { colors, font, radius } from '@/theme';
 
-/** "📍 Richmond · 0,8 km ▾" — opens the branch sheet. */
+/**
+ * "📍 Richmond · 0.8 km ▾" opens the branch sheet. At a scanned table the branch
+ * is the table's, so it reads "Richmond · Table 1" and offers to leave the table.
+ */
 export function BranchChip() {
   const { t } = useTranslation();
   const { branch, branches } = useStorefront();
+  const { journey, endJourney } = useTable();
+  const atTable = !!journey && !!branch && journey.branchId === branch.id;
   const distance = branches.find((r) => r.branch.id === branch?.id)?.distanceM;
 
+  const label = !branch
+    ? t('branch.choose')
+    : atTable
+      ? t('table.chip', { branch: branch.name, table: journey.tableLabel })
+      : `${branch.name}${distance != null ? `  ·  ${formatDistance(distance)}` : ''}`;
+
+  const onPress = () => {
+    if (!atTable) return router.push('/branches');
+    Alert.alert(label, t('table.atTable', { branch: branch.name, table: journey.tableLabel }), [
+      { text: t('table.stay'), style: 'cancel' },
+      { text: t('table.leave'), style: 'destructive', onPress: () => endJourney() },
+    ]);
+  };
+
   return (
-    <Pressable style={styles.chip} onPress={() => router.push('/branches')} accessibilityRole="button">
-      <MapPin size={14} color={colors.primary} />
+    <Pressable style={styles.chip} onPress={onPress} accessibilityRole="button">
+      {atTable ? <QrCode size={14} color={colors.primary} /> : <MapPin size={14} color={colors.primary} />}
       <Text style={styles.label} numberOfLines={1}>
-        {branch ? branch.name : t('branch.choose')}
-        {branch && distance != null ? `  ·  ${formatDistance(distance)}` : ''}
+        {label}
       </Text>
       <ChevronDown size={14} color={colors.zinc500} />
     </Pressable>

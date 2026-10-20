@@ -7,12 +7,10 @@
     "goHome": "Go to the menu"
   },
   "table": {
-    "welcome": "Welcome to table {{table}}",
-    "payNow": "Pay now",
-    "payLater": "Pay later",
-    "served": "Your order comes to your table.",
-    "menu": "See the menu",
-    "ended": "Leave table"
+    "chip": "{{branch}} · Table {{table}}",
+    "atTable": "You're ordering for table {{table}} at {{branch}}.",
+    "leave": "Leave table",
+    "stay": "Stay"
   },
   "tabs": {
     "home": "Home",

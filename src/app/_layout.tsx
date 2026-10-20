@@ -26,7 +26,6 @@ export default function RootLayout() {
                 <Stack.Screen name="index" />
                 <Stack.Screen name="(tabs)" />
                 <Stack.Screen name="link" />
-                <Stack.Screen name="order" />
                 <Stack.Screen name="checkout" />
                 <Stack.Screen name="payment" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
                 <Stack.Screen name="orders/index" />

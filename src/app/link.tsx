@@ -4,6 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { isAxiosError } from 'axios';
 import { useBrand } from '@/context/BrandContext';
+import { useTable } from '@/context/TableContext';
 import { parseIncomingUrl } from '@/lib/links';
 import { resolveQr } from '@/services/table.service';
 import { colors } from '@/theme';
@@ -16,11 +17,12 @@ class LinkFailure extends Error {
   }
 }
 
-/** Opens a link on the brand's web host: the storefront, or a table when it carries `qr`. */
+/** Opens a link on the brand's web host: the storefront, or, for a table QR, the menu ordering for that table. */
 export default function LinkScreen() {
   const { t } = useTranslation();
   const { url } = useLocalSearchParams<{ url?: string }>();
   const { brand } = useBrand();
+  const { startJourney } = useTable();
   const link = useMemo(() => (url ? parseIncomingUrl(url) : null), [url]);
   const [failure, setFailure] = useState<LinkError | null>(null);
   const error: LinkError | null = link ? failure : 'notFound';
@@ -33,15 +35,17 @@ export default function LinkScreen() {
     }
     const qrToken = link.qrToken;
     resolveQr(qrToken)
-      .then((table) => {
+      .then(async (table) => {
         if (table.brandId !== brand.brandId) throw new LinkFailure('brandMismatch');
-        router.replace({ pathname: '/order', params: { qr: qrToken } });
+        // The table pins its branch; the header chip then reads "Richmond · Table 1".
+        await startJourney({ ...table, qrToken });
+        router.replace('/menu');
       })
       .catch((e: unknown) => {
         if (e instanceof LinkFailure) setFailure(e.reason);
         else setFailure(isAxiosError(e) && e.response?.status === 404 ? 'tableNotFound' : 'notFound');
       });
-  }, [link, brand]);
+  }, [link, brand, startJourney]);
 
   if (!error) {
     return (
