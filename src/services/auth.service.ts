@@ -46,6 +46,12 @@ export async function loginWithApple(input: AppleSignInInput): Promise<AuthRespo
   return unwrap(data);
 }
 
+/** runmeal-api POST /auth/google/native: the ID token from the native Google sheet. */
+export async function loginWithGoogle(idToken: string): Promise<AuthResponse> {
+  const { data } = await api.post<Envelope<AuthResponse>>('/auth/google/native', { idToken, client: AUTH_CLIENT });
+  return unwrap(data);
+}
+
 export async function getProfile(): Promise<User> {
   const { data } = await api.get<Envelope<User>>('/profile');
   return unwrap(data);

@@ -1,5 +1,5 @@
 import { api } from '@/lib/api';
-import { loginWithApple, loginWithPassword, registerWithOtp, requestOtpLogin, verifyOtp } from '../auth.service';
+import { loginWithApple, loginWithGoogle, loginWithPassword, registerWithOtp, requestOtpLogin, verifyOtp } from '../auth.service';
 
 jest.mock('@/lib/api', () => ({ AUTH_CLIENT: 'user', api: { post: jest.fn(), get: jest.fn() } }));
 const post = api.post as jest.Mock;
@@ -37,3 +37,10 @@ it('signs in with Apple through the native route, as a customer', async () => {
   await expect(loginWithApple(input)).resolves.toMatchObject({ accessToken: 'a', refreshToken: 'r', sid: 's' });
   expect(post).toHaveBeenCalledWith('/auth/apple/native', { ...input, client: 'user' });
 });
+
+it('signs in with a Google ID token through the native route, as a customer', async () => {
+  post.mockResolvedValue({ data: { status: true, message: 'ok', data: { accessToken: 'a', refreshToken: 'r', sid: 's', user } } });
+  await expect(loginWithGoogle('google-jwt')).resolves.toMatchObject({ accessToken: 'a', sid: 's' });
+  expect(post).toHaveBeenCalledWith('/auth/google/native', { idToken: 'google-jwt', client: 'user' });
+});
+

@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Alert, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Constants from 'expo-constants';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Crypto from 'expo-crypto';
 import Svg, { Path } from 'react-native-svg';
+import { GoogleSignin, isErrorWithCode, isSuccessResponse, statusCodes } from '@react-native-google-signin/google-signin';
 import { useTranslation } from 'react-i18next';
 import { BRAND } from '@brand';
-import { loginWithApple } from '@/services/auth.service';
+import { GOOGLE_WEB_CLIENT_ID } from '@/config';
+import { loginWithApple, loginWithGoogle } from '@/services/auth.service';
 import type { AuthResponse } from '@/types/auth';
 import { colors, font, radius } from '@/theme';
 
@@ -14,6 +16,14 @@ import { colors, font, radius } from '@/theme';
 const appleSignInBuilt = Platform.OS === 'ios' && Constants.expoConfig?.ios?.usesAppleSignIn === true;
 
 const BUTTON_HEIGHT = 52;
+
+let googleConfigured = false;
+/** Once, before the first Google sign-in: the web client makes Google issue an ID token for runmeal-api. */
+function configureGoogle() {
+  if (googleConfigured) return;
+  GoogleSignin.configure({ webClientId: GOOGLE_WEB_CLIENT_ID, iosClientId: BRAND.google.iosClientId });
+  googleConfigured = true;
+}
 
 type Props = {
   /** Called with the API session once the provider and runmeal-api both accept the person. */
@@ -24,8 +34,9 @@ type Props = {
 
 /**
  * Sign in with Apple (iOS) and Google above the email form, with an "or use
- * your email" divider when either is shown. Each is switched on per brand in
- * brand/brand.json `signIn`.
+ * your email" divider when either is shown. Both use the provider's native
+ * sheet and hand its token to runmeal-api (POST /auth/apple/native,
+ * /auth/google/native). Each is switched on per brand in brand/brand.json `signIn`.
  */
 export function SocialSignIn({ onSignedIn, onError, busy }: Props) {
   const { t } = useTranslation();
@@ -76,8 +87,21 @@ export function SocialSignIn({ onSignedIn, onError, busy }: Props) {
     }
   };
 
-  // Mock until runmeal-api has POST /auth/google/native (docs/BACKEND_REQUEST_SOCIAL_SIGN_IN.md).
-  const signInWithGoogle = () => Alert.alert(t('auth.googleSoonTitle'), t('auth.googleSoonBody'));
+  const signInWithGoogle = async () => {
+    if (busy) return;
+    try {
+      configureGoogle();
+      if (Platform.OS === 'android') await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      const result = await GoogleSignin.signIn();
+      // Closing Google's sheet is the person's choice, not an error.
+      if (!isSuccessResponse(result)) return;
+      if (!result.data.idToken) throw new Error('GOOGLE_ID_TOKEN_MISSING');
+      await onSignedIn(await loginWithGoogle(result.data.idToken));
+    } catch (error) {
+      if (isErrorWithCode(error) && (error.code === statusCodes.SIGN_IN_CANCELLED || error.code === statusCodes.IN_PROGRESS)) return;
+      onError(error);
+    }
+  };
 
   return (
     <View style={styles.wrap}>

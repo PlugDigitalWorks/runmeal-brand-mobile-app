@@ -10,7 +10,7 @@ import { clearSession, getAccessToken, getTokens, saveTokens } from './session';
 export const AUTH_CLIENT = 'user';
 
 /** Requests that must never carry a bearer token or trigger a refresh. */
-const PUBLIC_AUTH_PATHS = ['/auth/login', '/auth/register', '/auth/verify-otp', '/auth/apple/native', '/auth/refresh'];
+const PUBLIC_AUTH_PATHS = ['/auth/login', '/auth/register', '/auth/verify-otp', '/auth/apple/native', '/auth/google/native', '/auth/refresh'];
 
 const baseConfig = {
   baseURL: API_URL,

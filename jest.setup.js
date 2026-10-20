@@ -17,3 +17,9 @@ jest.mock('expo-secure-store', () => {
     __reset: () => store.clear(),
   };
 });
+jest.mock('@react-native-google-signin/google-signin', () => ({
+  GoogleSignin: { configure: jest.fn(), hasPlayServices: jest.fn(async () => true), signIn: jest.fn() },
+  isSuccessResponse: (response) => response?.type === 'success',
+  isErrorWithCode: (error) => typeof error?.code === 'string',
+  statusCodes: { SIGN_IN_CANCELLED: 'SIGN_IN_CANCELLED', IN_PROGRESS: 'IN_PROGRESS', PLAY_SERVICES_NOT_AVAILABLE: 'PLAY_SERVICES_NOT_AVAILABLE' },
+}));

@@ -151,9 +151,7 @@
     "signInToOrder": "Sign in to add items to your order.",
     "orEmail": "or use your email",
     "socialFailed": "Sign-in didn't work. Please try again.",
-    "signInWithGoogle": "Sign in with Google",
-    "googleSoonTitle": "Google sign-in is on its way",
-    "googleSoonBody": "For now, sign in with Apple or your email."
+    "signInWithGoogle": "Sign in with Google"
   },
   "checkout": {
     "title": "Checkout",

@@ -8,7 +8,7 @@ import { BRAND } from '@brand';
 jest.mock('expo-constants', () => ({ __esModule: true, default: { expoConfig: { ios: { usesAppleSignIn: false } } } }));
 jest.mock('expo-crypto', () => ({}));
 jest.mock('expo-apple-authentication', () => ({ isAvailableAsync: jest.fn(async () => true) }));
-jest.mock('@/services/auth.service', () => ({ loginWithApple: jest.fn() }));
+jest.mock('@/services/auth.service', () => ({ loginWithApple: jest.fn(), loginWithGoogle: jest.fn() }));
 jest.mock('@brand', () => {
   const actual = jest.requireActual('@brand');
   return { ...actual, BRAND: { ...actual.BRAND, signIn: { apple: true, google: false } } };

@@ -9,6 +9,10 @@
   "linkHosts": ["order.dharmacoffee.uk"],
   "splashLogoWidth": 220,
   "signIn": { "apple": false, "google": false },
+  "google": {
+    "iosClientId": "709162763845-8gb882qbbtol9s9ls30tb54930uvk763.apps.googleusercontent.com",
+    "iosUrlScheme": "com.googleusercontent.apps.709162763845-8gb882qbbtol9s9ls30tb54930uvk763"
+  },
   "colors": {
     "primary": "#f5a623",
     "primaryForeground": "#ffffff",
