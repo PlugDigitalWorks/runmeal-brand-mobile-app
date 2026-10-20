@@ -36,7 +36,11 @@ export default function RootLayout() {
                 <Stack.Screen name="orders/index" />
                 <Stack.Screen name="orders/[id]" />
                 <Stack.Screen name="address-new" options={{ presentation: 'modal' }} />
-                <Stack.Screen name="login" options={{ presentation: 'modal' }} />
+                {/* Only as tall as its step, so the buttons sit within thumb reach. */}
+                <Stack.Screen
+                  name="login"
+                  options={{ ...sheet, sheetAllowedDetents: 'fitToContents', contentStyle: { backgroundColor: colors.card } }}
+                />
                 <Stack.Screen name="scan" options={{ presentation: 'modal' }} />
                 <Stack.Screen name="rewards" options={{ presentation: 'modal' }} />
                 <Stack.Screen

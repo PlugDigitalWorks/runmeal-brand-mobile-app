@@ -7,7 +7,7 @@
   "host": "order.dharmacoffee.uk",
   "linkHosts": ["order.dharmacoffee.uk"],
   "splashLogoWidth": 220,
-  "signIn": { "apple": false },
+  "signIn": { "apple": false, "google": false },
   "colors": {
     "primary": "#f5a623",
     "primaryForeground": "#ffffff",

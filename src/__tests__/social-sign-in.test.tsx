@@ -1,7 +1,9 @@
+import { Alert } from 'react-native';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import '@/i18n';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Crypto from 'expo-crypto';
-import { AppleSignInButton } from '@/components/AppleSignInButton';
+import { SocialSignIn } from '@/components/SocialSignIn';
 import { loginWithApple } from '@/services/auth.service';
 
 jest.mock('expo-constants', () => ({ __esModule: true, default: { expoConfig: { ios: { usesAppleSignIn: true } } } }));
@@ -26,6 +28,10 @@ jest.mock('expo-apple-authentication', () => {
   };
 });
 jest.mock('@/services/auth.service', () => ({ loginWithApple: jest.fn() }));
+jest.mock('@brand', () => {
+  const actual = jest.requireActual('@brand');
+  return { ...actual, BRAND: { ...actual.BRAND, signIn: { apple: true, google: true } } };
+});
 
 const auth = { accessToken: 'a', refreshToken: 'r', sid: 's', user: { id: 'u1' } };
 
@@ -41,7 +47,7 @@ it("gives Apple the nonce's SHA-256 digest and the API the raw nonce, with the f
     fullName: { givenName: ' Gökhan ', familyName: 'Çalışkan' },
   });
   const onSignedIn = jest.fn();
-  await render(<AppleSignInButton onSignedIn={onSignedIn} onError={jest.fn()} dividerLabel="or use your email" />);
+  await render(<SocialSignIn onSignedIn={onSignedIn} onError={jest.fn()} />);
   await fireEvent.press(await screen.findByText('Sign in with Apple'));
   await waitFor(() => expect(onSignedIn).toHaveBeenCalledWith(auth));
   expect(Crypto.digestStringAsync).toHaveBeenCalledWith('SHA-256', 'raw-nonce');
@@ -57,7 +63,7 @@ it("gives Apple the nonce's SHA-256 digest and the API the raw nonce, with the f
 
 it('sends no name on later sign-ins, when Apple no longer shares it', async () => {
   (AppleAuthentication.signInAsync as jest.Mock).mockResolvedValue({ identityToken: 'jwt', authorizationCode: 'code', fullName: null });
-  await render(<AppleSignInButton onSignedIn={jest.fn()} onError={jest.fn()} dividerLabel="or" />);
+  await render(<SocialSignIn onSignedIn={jest.fn()} onError={jest.fn()} />);
   await fireEvent.press(await screen.findByText('Sign in with Apple'));
   await waitFor(() => expect(loginWithApple).toHaveBeenCalledWith({ identityToken: 'jwt', authorizationCode: 'code', nonce: 'raw-nonce' }));
 });
@@ -65,7 +71,7 @@ it('sends no name on later sign-ins, when Apple no longer shares it', async () =
 it('treats closing the Apple sheet as a choice, not an error', async () => {
   (AppleAuthentication.signInAsync as jest.Mock).mockRejectedValue(Object.assign(new Error('canceled'), { code: 'ERR_REQUEST_CANCELED' }));
   const onError = jest.fn();
-  await render(<AppleSignInButton onSignedIn={jest.fn()} onError={onError} dividerLabel="or" />);
+  await render(<SocialSignIn onSignedIn={jest.fn()} onError={onError} />);
   await fireEvent.press(await screen.findByText('Sign in with Apple'));
   await waitFor(() => expect(AppleAuthentication.signInAsync).toHaveBeenCalled());
   expect(onError).not.toHaveBeenCalled();
@@ -77,7 +83,18 @@ it('reports an API refusal', async () => {
   const refusal = Object.assign(new Error('401'), { response: { status: 401 } });
   (loginWithApple as jest.Mock).mockRejectedValue(refusal);
   const onError = jest.fn();
-  await render(<AppleSignInButton onSignedIn={jest.fn()} onError={onError} dividerLabel="or" />);
+  await render(<SocialSignIn onSignedIn={jest.fn()} onError={onError} />);
   await fireEvent.press(await screen.findByText('Sign in with Apple'));
   await waitFor(() => expect(onError).toHaveBeenCalledWith(refusal));
 });
+
+it('shows Google below Apple, for now as a notice until the API supports it', async () => {
+  const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+  await render(<SocialSignIn onSignedIn={jest.fn()} onError={jest.fn()} />);
+  await screen.findByText('Sign in with Apple');
+  await fireEvent.press(screen.getByText('Sign in with Google'));
+  expect(alert).toHaveBeenCalledWith('Google sign-in is on its way', 'For now, sign in with Apple or your email.');
+  expect(loginWithApple).not.toHaveBeenCalled();
+  expect(screen.getByText('or use your email')).toBeTruthy();
+});
+

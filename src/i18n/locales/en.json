@@ -150,7 +150,10 @@
     "stayed": "You'll stay signed in on this phone.",
     "signInToOrder": "Sign in to add items to your order.",
     "orEmail": "or use your email",
-    "appleFailed": "Apple sign-in didn't work. Please try again."
+    "socialFailed": "Sign-in didn't work. Please try again.",
+    "signInWithGoogle": "Sign in with Google",
+    "googleSoonTitle": "Google sign-in is on its way",
+    "googleSoonBody": "For now, sign in with Apple or your email."
   },
   "checkout": {
     "title": "Checkout",
