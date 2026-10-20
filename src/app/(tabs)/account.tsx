@@ -1,18 +1,15 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { ChevronRight, Gift, LogOut, ReceiptText, User } from 'lucide-react-native';
 import { useAuth } from '@/context/AuthContext';
-import { useBrand } from '@/context/BrandContext';
 import { Button } from '@/ui/Button';
 import { colors, font, radius, space } from '@/theme';
 
 export default function AccountScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { brand } = useBrand();
   const { user, isMember, signOut } = useAuth();
 
   return (
@@ -46,14 +43,6 @@ export default function AccountScreen() {
           <Row icon={<Gift size={20} color={colors.zinc700} />} label={t('rewards.title')} onPress={() => router.push('/rewards')} />
         </View>
       ) : null}
-
-      <Text style={styles.label}>{t('account.cafe')}</Text>
-      <Pressable style={styles.card} onPress={() => router.push('/brands')}>
-        {brand?.logoUrl ? <Image source={{ uri: brand.logoUrl }} style={styles.logo} contentFit="contain" /> : null}
-        <Text style={styles.cardText}>{brand?.name}</Text>
-        <Text style={styles.link}>{t('account.change')}</Text>
-        <ChevronRight size={18} color={colors.zinc400} />
-      </Pressable>
 
       {user ? (
         <Pressable style={styles.signOut} onPress={signOut}>
@@ -108,20 +97,6 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 16 },
   rowText: { flex: 1, fontSize: font.base, fontWeight: '600', color: colors.zinc800 },
   divider: { height: StyleSheet.hairlineWidth, backgroundColor: colors.zinc100 },
-  label: { fontSize: font.small, fontWeight: '700', color: colors.zinc500, textTransform: 'uppercase', letterSpacing: 0.8, marginTop: 8 },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    padding: 14,
-    borderRadius: radius.xl,
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.zinc200,
-  },
-  logo: { width: 36, height: 36, borderRadius: 18 },
-  cardText: { flex: 1, fontSize: font.base, fontWeight: '700', color: colors.zinc800 },
-  link: { fontSize: font.body, fontWeight: '600', color: colors.primary },
   signOut: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 16, marginTop: 8 },
   signOutText: { color: colors.destructive, fontWeight: '700', fontSize: font.base },
 });

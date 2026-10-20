@@ -1,56 +1,51 @@
-# Welcome to your Expo app 👋
+# Single-brand app
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+The mobile storefront for one Runmeal brand, currently **Dharma Coffee**. It
+is the multi-cafe `brand-mobile-app` with the cafe picker removed: the app opens
+straight into its brand's menu, cart, checkout, orders and loyalty card, against
+the same Runmeal API as the brand's website.
 
-## Get started
+Expo SDK 58, Expo Router, React Native. Production API: `https://api.runmeal.com`
+(override with `EXPO_PUBLIC_API_URL`).
 
-1. Install dependencies
+## Rebranding
 
-   ```bash
-   npm install
-   ```
+Everything that makes this app one brand's app lives in `brand/`:
 
-2. Start the app
+| File | What it sets |
+| --- | --- |
+| `brand/brand.json` | Display name, Expo slug, URL scheme, iOS bundle ID, Android package, the brand's web `host`, the `linkHosts` whose links and table QR codes the app opens, and the colors |
+| `brand/assets/icon.png` | App icon, 1024×1024, opaque |
+| `brand/assets/adaptive-icon.png` | Android adaptive icon foreground, 1024×1024, transparent, artwork inside the middle 66% |
+| `brand/assets/splash-icon.png` | Splash screen image, transparent |
+| `brand/assets/logo.png` | Wordmark used in the header, on the sign-in screen and as the product image placeholder |
+| `brand/assets/favicon.png` | Web favicon |
 
-   ```bash
-   npx expo start
-   ```
+To make the app for another brand:
 
-In the output, you'll find options to open the app in a
+1. Edit `brand/brand.json`.
+   - `host` is the brand's active web domain: its custom domain when one is live, otherwise `{slug}.runmeal.com`. The app finds the brand by sending this host as `Origin` to `GET /brands/resolve`, like the website does.
+   - `linkHosts` lists the domains printed on its table QR codes.
+   - `bundleIdentifier` and `androidPackage` cannot change after the first store release.
+2. Replace the images in `brand/assets`, keeping the file names and sizes.
+3. Run `npm run check:brand`. It confirms that `host` and every `linkHosts` entry resolve to the same live brand.
+4. Run `npx expo prebuild --clean` so the native projects pick up the new name, icons and identifiers.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+No other file names the brand.
 
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Develop
 
 ```bash
-npm run reset-project
+npm ci
+npx expo run:ios       # or: npx expo run:android
+npx jest
+npx tsc --noEmit
+npx expo lint
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+## Backend
 
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+The app only uses existing endpoints. What the backend would need for a store
+release (mobile sign-in without a web reCAPTCHA, longer sessions, native
+Google/Apple sign-in, the payment return target, Universal Links files) is in
+`docs/BACKEND_REQUIREMENTS.md`.

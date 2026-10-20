@@ -5,13 +5,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react-native';
 import { Recaptcha } from '@/components/Recaptcha';
-import { RunmealLogo } from '@/components/RunmealLogo';
+import { BrandWordmark } from '@/components/BrandLogo';
 import { useAuth } from '@/context/AuthContext';
 import { useBrand } from '@/context/BrandContext';
 import { apiErrorMessage } from '@/lib/api-error';
 import { loginWithPassword, registerWithOtp, requestOtpLogin, verifyOtp } from '@/services/auth.service';
 import { Button } from '@/ui/Button';
 import { colors, font, radius, space } from '@/theme';
+import { BRAND } from '@brand';
 
 type Step = 'email' | 'password' | 'captcha' | 'code' | 'register';
 type CaptchaFor = 'otp' | 'password';
@@ -40,7 +41,7 @@ export default function LoginScreen() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const host = brand?.primaryDomain ?? brand?.defaultDomain ?? 'runmeal.com';
+  const host = brand?.primaryDomain ?? brand?.defaultDomain ?? BRAND.host;
   const trimmedEmail = email.trim().toLowerCase();
 
   const finish = () => {
@@ -111,7 +112,7 @@ export default function LoginScreen() {
     <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled">
         <View style={styles.topBar}>
-          <RunmealLogo size={30} />
+          <BrandWordmark height={30} />
           <Pressable onPress={() => router.back()} hitSlop={10} accessibilityLabel="Close">
             <X size={24} color={colors.zinc500} />
           </Pressable>

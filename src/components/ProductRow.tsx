@@ -4,8 +4,8 @@ import { Plus } from 'lucide-react-native';
 import { Price } from '@/ui/Price';
 import { colors, font, radius } from '@/theme';
 import type { Product } from '@/types/product';
+import { BRAND_LOGO } from '@brand';
 
-const FALLBACK = require('@/../assets/images/runmeal-mark.png');
 
 type Props = { product: Product; currency: string; onPress: () => void };
 
@@ -15,7 +15,7 @@ export function ProductRow({ product, currency, onPress }: Props) {
   return (
     <Pressable style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.zinc50 }]} onPress={onPress}>
       <Image
-        source={product.imageUrl ? { uri: product.imageUrl } : FALLBACK}
+        source={product.imageUrl ? { uri: product.imageUrl } : BRAND_LOGO}
         style={styles.thumb}
         contentFit={product.imageUrl ? 'cover' : 'contain'}
         transition={150}

@@ -24,8 +24,8 @@ import { Price } from '@/ui/Price';
 import { QuantityStepper } from '@/ui/QuantityStepper';
 import { colors, font, radius, space } from '@/theme';
 import type { OptionGroup, Product } from '@/types/product';
+import { BRAND_LOGO } from '@brand';
 
-const FALLBACK = require('@/../assets/images/runmeal-mark.png');
 
 /** brandfe's ProductDetailModal as a bottom sheet: hero image, option cards, note, stepper and CTA. */
 export default function ProductSheet() {
@@ -126,7 +126,7 @@ export default function ProductSheet() {
     <View style={styles.sheet}>
       <ScrollView contentContainerStyle={{ paddingBottom: 24 }} keyboardShouldPersistTaps="handled">
         <Image
-          source={product.imageUrl ? { uri: product.imageUrl } : FALLBACK}
+          source={product.imageUrl ? { uri: product.imageUrl } : BRAND_LOGO}
           style={styles.hero}
           contentFit={product.imageUrl ? 'cover' : 'contain'}
         />

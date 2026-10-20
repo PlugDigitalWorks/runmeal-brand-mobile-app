@@ -1,5 +1,5 @@
 {
-  "name": "brand-mobile-app",
+  "name": "single-brand-app",
   "version": "1.0.0",
   "main": "expo-router/entry",
   "dependencies": {
@@ -57,7 +57,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "test": "jest",
-    "check:brands": "node scripts/check-brands.mjs"
+    "check:brand": "node scripts/check-brand.mjs"
   },
   "private": true,
   "jest": {
@@ -67,7 +67,8 @@
     ],
     "moduleNameMapper": {
       "^lucide-react-native$": "<rootDir>/node_modules/lucide-react-native/dist/cjs/lucide-react-native.js",
-      "^@/(.*)$": "<rootDir>/src/$1"
+      "^@/(.*)$": "<rootDir>/src/$1",
+      "^@brand$": "<rootDir>/brand"
     }
   },
   "expo": {

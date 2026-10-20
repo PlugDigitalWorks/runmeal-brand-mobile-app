@@ -5,8 +5,8 @@ import { Minus, Plus, Trash2 } from 'lucide-react-native';
 import type { CartLine } from '@/lib/cart-model';
 import { formatMoney } from '@/lib/money';
 import { colors, font, radius } from '@/theme';
+import { BRAND_LOGO } from '@brand';
 
-const FALLBACK = require('@/../assets/images/runmeal-mark.png');
 
 type Props = { line: CartLine; currency: string; busy?: boolean; onQty: (qty: number) => void };
 
@@ -15,7 +15,7 @@ export function CartLineRow({ line, currency, busy, onQty }: Props) {
   const { t } = useTranslation();
   return (
     <View style={[styles.row, busy && { opacity: 0.5 }]}>
-      <Image source={line.imageUrl ? { uri: line.imageUrl } : FALLBACK} style={styles.thumb} contentFit={line.imageUrl ? 'cover' : 'contain'} />
+      <Image source={line.imageUrl ? { uri: line.imageUrl } : BRAND_LOGO} style={styles.thumb} contentFit={line.imageUrl ? 'cover' : 'contain'} />
       <View style={{ flex: 1, gap: 4 }}>
         <Text style={styles.name}>{line.name}</Text>
         {line.optionsText ? <Text style={styles.meta}>{line.optionsText}</Text> : null}

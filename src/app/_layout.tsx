@@ -25,7 +25,6 @@ export default function RootLayout() {
               <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
                 <Stack.Screen name="index" />
                 <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="brands" />
                 <Stack.Screen name="link" />
                 <Stack.Screen name="order" />
                 <Stack.Screen name="checkout" />

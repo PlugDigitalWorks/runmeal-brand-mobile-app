@@ -1,16 +1,19 @@
+import { BRAND } from '@brand';
+
 /**
  * Design tokens, copied from brandfe: src/themes/brands/default.theme.ts for the
  * brand colors and Tailwind's zinc/orange scales for the neutrals it hard-codes.
  */
 export const colors = {
-  primary: '#f5a623',
-  primaryForeground: '#ffffff',
-  primaryPressed: '#ea580c',
-  accent: '#fff1df',
-  accentForeground: '#e28900',
-  background: '#fffaf5',
+  // The brand's own colors, from brand/brand.json.
+  primary: BRAND.colors.primary,
+  primaryForeground: BRAND.colors.primaryForeground,
+  primaryPressed: BRAND.colors.primaryPressed,
+  accent: BRAND.colors.accent,
+  accentForeground: BRAND.colors.accentForeground,
+  background: BRAND.colors.background,
   card: '#ffffff',
-  border: '#f2e6d7',
+  border: BRAND.colors.border,
   destructive: '#ef4444',
   success: '#16a34a',
   successSoft: '#f0fdf4',

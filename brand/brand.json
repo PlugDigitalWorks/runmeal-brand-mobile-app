@@ -1,0 +1,20 @@
+{
+  "name": "Dharma Coffee",
+  "slug": "dharma-coffee",
+  "scheme": "dharmacoffee",
+  "bundleIdentifier": "uk.dharmacoffee.app",
+  "androidPackage": "uk.dharmacoffee.app",
+  "host": "order.dharmacoffee.uk",
+  "linkHosts": ["order.dharmacoffee.uk"],
+  "colors": {
+    "primary": "#f5a623",
+    "primaryForeground": "#ffffff",
+    "primaryPressed": "#ea580c",
+    "accent": "#fff1df",
+    "accentForeground": "#e28900",
+    "background": "#fffaf5",
+    "border": "#f2e6d7",
+    "iconBackground": "#ffffff",
+    "splashBackground": "#ffffff"
+  }
+}

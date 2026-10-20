@@ -13,6 +13,7 @@ import { getMyOrders } from '@/services/order.service';
 import { Button } from '@/ui/Button';
 import { EmptyState } from '@/ui/EmptyState';
 import { colors, font, space } from '@/theme';
+import { BRAND } from '@brand';
 
 /**
  * The provider's hosted page (Stripe, PayTR, Dojo) or iyzico's form, inside the
@@ -27,7 +28,7 @@ export default function PaymentScreen() {
   const [pending] = useState(getPendingPayment);
   const [failed, setFailed] = useState(false);
   const handled = useRef(false);
-  const cafeOrigin = `https://${brand?.primaryDomain ?? brand?.defaultDomain ?? 'runmeal.com'}`;
+  const cafeOrigin = `https://${brand?.primaryDomain ?? brand?.defaultDomain ?? BRAND.host}`;
 
   const finish = async (result: PaymentCallback): Promise<void> => {
     if (handled.current || !pending) return;

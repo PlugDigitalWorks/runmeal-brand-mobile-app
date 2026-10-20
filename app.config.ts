@@ -1,34 +1,33 @@
 import type { ExpoConfig } from 'expo/config';
+import brand from './brand/brand.json';
 
-const LINK_DOMAIN = process.env.EXPO_PUBLIC_LINK_BASE_DOMAIN ?? 'runmeal.com';
-const linkHost = `*.${LINK_DOMAIN}`;
+// Paths the app opens once the brand's web host serves the link verification files.
+const androidLinkData = brand.linkHosts.flatMap((host) => [
+  { scheme: 'https', host, path: '/' },
+  { scheme: 'https', host, path: '/order' },
+  { scheme: 'https', host, pathPrefix: '/pages/' },
+  { scheme: 'https', host, pathPrefix: '/rewards' },
+]);
 
-// Paths the app opens once the web side serves the link verification files.
-const androidLinkData = [
-  { scheme: 'https', host: linkHost, path: '/' },
-  { scheme: 'https', host: linkHost, path: '/order' },
-  { scheme: 'https', host: linkHost, pathPrefix: '/pages/' },
-  { scheme: 'https', host: linkHost, pathPrefix: '/rewards' },
-];
-
+/** Everything brand-specific comes from brand/brand.json and brand/assets. */
 const config: ExpoConfig = {
-  name: 'Runmeal',
-  slug: 'runmeal',
-  scheme: 'runmeal',
+  name: brand.name,
+  slug: brand.slug,
+  scheme: brand.scheme,
   version: '1.0.0',
   orientation: 'portrait',
-  icon: './assets/images/icon.png',
+  icon: './brand/assets/icon.png',
   userInterfaceStyle: 'automatic',
   ios: {
-    bundleIdentifier: 'com.runmeal.app',
+    bundleIdentifier: brand.bundleIdentifier,
     supportsTablet: false,
-    associatedDomains: [`applinks:${linkHost}`],
+    associatedDomains: brand.linkHosts.map((host) => `applinks:${host}`),
   },
   android: {
-    package: 'com.runmeal.app',
+    package: brand.androidPackage,
     adaptiveIcon: {
-      backgroundColor: '#FFFFFF',
-      foregroundImage: './assets/images/adaptive-icon.png',
+      backgroundColor: brand.colors.iconBackground,
+      foregroundImage: './brand/assets/adaptive-icon.png',
     },
     predictiveBackGestureEnabled: false,
     intentFilters: [
@@ -41,16 +40,16 @@ const config: ExpoConfig = {
     ],
   },
   web: {
-    favicon: './assets/images/favicon.png',
+    favicon: './brand/assets/favicon.png',
   },
   plugins: [
     'expo-router',
     [
       'expo-splash-screen',
       {
-        backgroundColor: '#FFFFFF',
-        image: './assets/images/splash-icon.png',
-        imageWidth: 120,
+        backgroundColor: brand.colors.splashBackground,
+        image: './brand/assets/splash-icon.png',
+        imageWidth: 220,
       },
     ],
     [

@@ -1,21 +1,10 @@
 {
-  "brands": {
-    "title": "Choose your cafe",
-    "search": "Search cafes",
-    "recent": "Recently visited",
-    "all": "All cafes",
-    "empty": "No cafes found",
-    "resolveError": "This cafe can't be opened right now. Try again later."
-  },
   "link": {
     "opening": "Opening…",
-    "notFound": "This link doesn't belong to a cafe.",
+    "notFound": "This link can't be opened in the app.",
     "tableNotFound": "This table QR is no longer valid.",
     "brandMismatch": "This QR belongs to another cafe.",
-    "goToBrands": "Choose a cafe"
-  },
-  "header": {
-    "switchBrand": "Switch cafe"
+    "goHome": "Go to the menu"
   },
   "table": {
     "welcome": "Welcome to table {{table}}",
@@ -92,8 +81,6 @@
   },
   "account": {
     "title": "Account",
-    "cafe": "Your cafe",
-    "change": "Change",
     "signIn": "Sign in or create an account",
     "signOut": "Sign out",
     "orders": "Your orders",
@@ -132,7 +119,7 @@
     "title": "Scan the table QR",
     "permission": "Camera access is needed to scan the table QR.",
     "allow": "Allow",
-    "invalid": "This QR doesn't belong to a Runmeal cafe.",
+    "invalid": "This QR isn't a {{name}} table code.",
     "hint": "Line up the table QR code inside the frame."
   },
   "auth": {
@@ -250,5 +237,8 @@
   },
   "common": {
     "close": "Close"
+  },
+  "brand": {
+    "loadError": "We couldn't reach the cafe. Check your connection and try again."
   }
 }

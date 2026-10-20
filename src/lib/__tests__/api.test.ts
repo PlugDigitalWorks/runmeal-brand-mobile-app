@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
 import { api } from '../api';
-import { saveActiveBrand } from '../brand-store';
+import { cacheBrand } from '../brand-store';
 
 type Handler = { fulfilled: (c: InternalAxiosRequestConfig) => Promise<InternalAxiosRequestConfig> };
 
@@ -24,8 +24,8 @@ it('sends body auth mode and a stable device id on every request', async () => {
   expect(second.headers['x-device-id']).toBe(first.headers['x-device-id']);
 });
 
-it('adds x-brand-id once a cafe is selected', async () => {
-  await saveActiveBrand({
+it('adds x-brand-id once the brand is known', async () => {
+  await cacheBrand({
     brandId: 'brand-1',
     slug: 'a',
     name: 'A',

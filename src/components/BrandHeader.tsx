@@ -1,14 +1,14 @@
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BrandSwitcherButton } from '@/components/BrandSwitcherButton';
+import { BrandLogo } from '@/components/BrandLogo';
 import { colors } from '@/theme';
 
-/** White top bar like brandfe's sticky header: cafe logo, a middle slot and a right slot. */
+/** White top bar like brandfe's sticky header: the brand's logo, a middle slot and a right slot. */
 export function BrandHeader({ center, right }: { center?: React.ReactNode; right?: React.ReactNode }) {
   const insets = useSafeAreaInsets();
   return (
     <View style={[styles.bar, { paddingTop: insets.top + 8 }]}>
-      <BrandSwitcherButton />
+      <BrandLogo />
       <View style={styles.center}>{center}</View>
       {right}
     </View>

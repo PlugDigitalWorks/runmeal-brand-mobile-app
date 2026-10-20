@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { QrCode, X } from 'lucide-react-native';
 import { routeForScannedCode } from '@/lib/links';
 import { colors, font, radius } from '@/theme';
+import { BRAND } from '@brand';
 
 const FRAME = 250;
 const CORNER = 34;
@@ -77,7 +78,7 @@ export default function ScanScreen() {
       </View>
       {invalid ? (
         <View style={[styles.banner, { bottom: insets.bottom + 32 }]}>
-          <Text style={styles.bannerText}>{t('scan.invalid')}</Text>
+          <Text style={styles.bannerText}>{t('scan.invalid', { name: BRAND.name })}</Text>
         </View>
       ) : null}
     </View>
