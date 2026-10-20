@@ -148,7 +148,7 @@
     "passwordRequired": "Enter your password.",
     "failed": "Something went wrong. Try again.",
     "stayed": "You'll stay signed in on this phone.",
-    "signInToOrder": "Sign in to add items to your order. We'll email you a 6-digit code.",
+    "signInToOrder": "Sign in to add items to your order.",
     "orEmail": "or use your email",
     "appleFailed": "Apple sign-in didn't work. Please try again."
   },

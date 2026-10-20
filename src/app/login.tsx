@@ -123,7 +123,8 @@ export default function LoginScreen() {
 
         {step === 'email' || step === 'password' ? (
           <>
-            <Text style={styles.body}>{step === 'email' ? (reason === 'order' ? t('auth.signInToOrder') : t('auth.subtitle')) : t('auth.stayed')}</Text>
+            {/* Why sign-in opened applies to every method, so it sits above them all. */}
+            {step === 'email' && reason === 'order' ? <Text style={styles.body}>{t('auth.signInToOrder')}</Text> : null}
             {step === 'email' ? (
               <AppleSignInButton
                 busy={busy}
@@ -136,6 +137,8 @@ export default function LoginScreen() {
                 onError={(e) => setError(apiErrorMessage(e, t('auth.appleFailed')))}
               />
             ) : null}
+            {/* How the email sign-in works, right above the email field. */}
+            <Text style={styles.note}>{step === 'email' ? t('auth.subtitle') : t('auth.stayed')}</Text>
             <Field label={t('auth.email')}>
               <TextInput
                 testID="login-email"
@@ -286,6 +289,7 @@ const styles = StyleSheet.create({
   content: { padding: space.xl, gap: space.lg },
   topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: space.sm },
   title: { fontSize: font.display, fontWeight: '800', color: colors.zinc900, letterSpacing: -0.5 },
+  note: { fontSize: font.base - 1, color: colors.zinc500, lineHeight: 21 },
   body: { fontSize: font.base - 1, color: colors.zinc500, lineHeight: 21, marginTop: -8 },
   label: { fontSize: font.body, fontWeight: '600', color: colors.zinc700 },
   input: {
