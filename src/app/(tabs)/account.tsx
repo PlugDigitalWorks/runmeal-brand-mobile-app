@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { ChevronRight, Gift, LogOut, MapPin, ReceiptText, User } from 'lucide-react-native';
 import { useAuth } from '@/context/AuthContext';
 import { useStorefront } from '@/context/StorefrontContext';
-import { openLegalPage } from '@/lib/legal';
 import { Button } from '@/ui/Button';
 import { colors, font, radius, space } from '@/theme';
 
@@ -62,11 +61,11 @@ export default function AccountScreen() {
       ) : null}
 
       <View style={styles.legal}>
-        <Pressable onPress={() => openLegalPage('privacy')} hitSlop={8}>
+        <Pressable onPress={() => router.push('/legal/privacy')} hitSlop={8}>
           <Text style={styles.legalLink}>{t('account.privacy')}</Text>
         </Pressable>
         <Text style={styles.legalDot}>·</Text>
-        <Pressable onPress={() => openLegalPage('terms')} hitSlop={8}>
+        <Pressable onPress={() => router.push('/legal/terms')} hitSlop={8}>
           <Text style={styles.legalLink}>{t('account.terms')}</Text>
         </Pressable>
       </View>

@@ -45,6 +45,7 @@ export default function RootLayout() {
                 <Stack.Screen name="scan" options={{ presentation: 'modal' }} />
                 <Stack.Screen name="rewards" options={{ presentation: 'modal' }} />
                 <Stack.Screen name="delete-account" options={{ presentation: 'modal' }} />
+                <Stack.Screen name="legal/[page]" options={{ presentation: 'modal' }} />
                 <Stack.Screen
                   name="product/[id]"
                   options={{ ...sheet, sheetAllowedDetents: [0.92], contentStyle: { backgroundColor: colors.card } }}

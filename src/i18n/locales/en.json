@@ -278,5 +278,8 @@
     "failed": "Couldn't delete your account. Try again.",
     "doneTitle": "Account deleted",
     "doneBody": "Your account has been deleted."
+  },
+  "legal": {
+    "updated": "Last updated {{date}}"
   }
 }

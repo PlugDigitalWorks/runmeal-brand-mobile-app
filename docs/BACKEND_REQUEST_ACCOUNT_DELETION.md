@@ -50,14 +50,9 @@ Play Console asks for a URL where people can request deletion without the app. E
 
 This is brandfe work, so it is listed here only so it is not forgotten.
 
-## 3. Privacy policy and terms pages
+## 3. Privacy policy and terms
 
-The app links to these two URLs from the Account tab, and App Store Connect and Play Console need the privacy URL as well:
-
-- `https://order.dharmacoffee.uk/pages/privacy-policy`
-- `https://order.dharmacoffee.uk/pages/terms`
-
-Both are CMS content pages. Today both return `CONTENT_PAGE_NOT_FOUND` for Dharma. They have to be created in the dashboard CMS with the slugs `privacy-policy` and `terms`. The privacy policy must name the data collected (account, addresses, location for branch sorting, orders, loyalty) and how to delete it.
+These are done; nothing is needed from the API. The app shows both in-app (`src/content/legal.ts`), and brandfe serves the same text for every brand at `/privacy` and `/terms`. The store listings use `https://order.dharmacoffee.uk/privacy`. The data controller is PLUG DIGITAL LTD (company number 12458401).
 
 ## What the app does
 
