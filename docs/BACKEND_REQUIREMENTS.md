@@ -32,7 +32,7 @@ The app was built without touching `runmeal-api` or `runmeal-brand-fe-website`. 
 
 ## 6. Universal Links / App Links files (web or domain-router Worker, not the API)
 
-- **What:** serve `/.well-known/apple-app-site-association` and `/.well-known/assetlinks.json` on every host in `brand/brand.json` `linkHosts` (today `order.dharmacoffee.uk`), listing app id `<TeamID>.uk.dharmacoffee.app` / package `uk.dharmacoffee.app` and the paths `/`, `/order`, `/pages/*`, `/rewards*`.
+- **What:** serve `/.well-known/apple-app-site-association` and `/.well-known/assetlinks.json` on every host in `brand/brand.json` `linkHosts` (today `order.dharmacoffee.uk`), listing app id `T776LGPKWZ.uk.dharmacoffee.ios` / package `uk.dharmacoffee.app` and the paths `/`, `/order`, `/pages/*`, `/rewards*`.
 - **Why:** the app is configured for `applinks:` on those hosts and the matching Android intent filters (`app.config.ts`, built from `brand/brand.json`), and routes every incoming link through `src/app/+native-intent.tsx`. Without these files the phone camera opens table QR codes in the browser; the app's own scanner (middle tab) works regardless.
 - **Also:** when a custom domain goes live, the default `{slug}.runmeal.com` row is set INACTIVE (`brand-domain.service.ts` around line 472), so QR codes printed on the old host stop resolving; `npm run check:brand` flags such a host in `linkHosts`.
 

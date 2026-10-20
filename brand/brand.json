@@ -2,7 +2,7 @@
   "name": "Dharma Coffee",
   "slug": "dharma-coffee",
   "scheme": "dharmacoffee",
-  "bundleIdentifier": "uk.dharmacoffee.app",
+  "bundleIdentifier": "uk.dharmacoffee.ios",
   "androidPackage": "uk.dharmacoffee.app",
   "appleTeamId": "T776LGPKWZ",
   "host": "order.dharmacoffee.uk",

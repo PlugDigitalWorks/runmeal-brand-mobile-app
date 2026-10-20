@@ -1,7 +1,7 @@
 # Backend request: native Google and Apple sign-in for the mobile app
 
 **For:** runmeal-api team
-**From:** runmeal-brand-mobile-app (the single-brand app, today Dharma Coffee, bundle `uk.dharmacoffee.app`)
+**From:** runmeal-brand-mobile-app (the single-brand app, today Dharma Coffee, iOS bundle `uk.dharmacoffee.ios`, Android package `uk.dharmacoffee.app`)
 **Status:** requested; the app side will be built against this contract and mocked in tests until the endpoints ship.
 
 ## Why the existing Google flow does not work in the app
@@ -81,7 +81,7 @@ Same shape, for Sign in with Apple.
 
 - RS256 signature against Apple's keys at `https://appleid.apple.com/auth/keys` (cache them by `kid`).
 - `iss` is `https://appleid.apple.com`.
-- `aud` is one of the app bundle IDs in a new env var `APPLE_CLIENT_IDS` (comma-separated; today `uk.dharmacoffee.app`, and each future single-brand app adds its own).
+- `aud` is one of the app bundle IDs in a new env var `APPLE_CLIENT_IDS` (comma-separated; today `uk.dharmacoffee.ios`, and each future single-brand app adds its own).
 - `exp` is in the future.
 - `nonce` claim equals `sha256(nonce)` from the request, hex-encoded.
 
@@ -109,8 +109,8 @@ Both calls need a client secret JWT signed with the team's Sign in with Apple ke
 
 | Where | What |
 | --- | --- |
-| Google Cloud Console (the project that owns `GOOGLE_CLIENT_ID`) | An iOS OAuth client for bundle ID `uk.dharmacoffee.app`, and an Android OAuth client for package `uk.dharmacoffee.app`. Android needs the SHA-1 of the signing key. Today's test APKs use the standard React Native debug key, SHA-1 `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25` (testing only); add Play App Signing's SHA-1 once the app is on Play. The app needs the iOS client ID and its reversed URL scheme. |
-| Apple Developer (paid team) | App ID `uk.dharmacoffee.app` with the Sign in with Apple capability. A Sign in with Apple key (`.p8`) for the token exchange and revoke. |
+| Google Cloud Console (the project that owns `GOOGLE_CLIENT_ID`) | An iOS OAuth client for bundle ID `uk.dharmacoffee.ios`, and an Android OAuth client for package `uk.dharmacoffee.app`. Android needs the SHA-1 of the signing key. Today's test APKs use the standard React Native debug key, SHA-1 `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25` (testing only); add Play App Signing's SHA-1 once the app is on Play. The app needs the iOS client ID and its reversed URL scheme. |
+| Apple Developer (PLUG DIGITAL WORKS LTD, team T776LGPKWZ) | App ID `uk.dharmacoffee.ios` with the Sign in with Apple capability. A Sign in with Apple key (`.p8`) for the token exchange and revoke. |
 | runmeal-api env | `GOOGLE_NATIVE_CLIENT_IDS` (optional), `APPLE_CLIENT_IDS`, `APPLE_TEAM_ID`, `APPLE_KEY_ID`, `APPLE_PRIVATE_KEY` |
 
 ## What the app will do
@@ -119,3 +119,11 @@ Both calls need a client secret JWT signed with the team's Sign in with Apple ke
 - **Android:** only Google.
 - Both use the native SDKs (`expo-apple-authentication`, `@react-native-google-signin/google-signin`). The token is posted to the endpoint above, and the response is stored like an email-code sign-in: tokens in the Keychain/Keystore, silent refresh, no second sign-in.
 - Each button is switched on per brand in `brand/brand.json` once its endpoint is live.
+
+## Update, 20 October 2026: iOS bundle ID is `uk.dharmacoffee.ios`
+
+`uk.dharmacoffee.app` was claimed by a free personal Apple team during device testing and cannot be registered to PLUG DIGITAL WORKS LTD, so the iOS app is now `uk.dharmacoffee.ios`. The Android package stays `uk.dharmacoffee.app`. Two backend-side changes follow:
+
+- **Google Cloud:** point the iOS OAuth client (`709162763845-8gb882qbbtol9s9ls30tb54930uvk763`) at bundle ID `uk.dharmacoffee.ios`, or create a new iOS client for it and send the app its client ID. The Android client is unchanged.
+- **runmeal-api env:** `APPLE_SIGNIN_BUNDLE_ID=uk.dharmacoffee.ios` (staging and production).
+
