@@ -35,7 +35,8 @@ export default function RootLayout() {
                 <Stack.Screen name="payment" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
                 <Stack.Screen name="orders/index" />
                 <Stack.Screen name="orders/[id]" />
-                <Stack.Screen name="address-new" options={{ presentation: 'modal' }} />
+                <Stack.Screen name="addresses/index" />
+                <Stack.Screen name="addresses/form" options={{ presentation: 'modal' }} />
                 {/* Only as tall as its step, so the buttons sit within thumb reach. */}
                 <Stack.Screen
                   name="login"

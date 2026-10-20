@@ -25,6 +25,8 @@ type StorefrontValue = {
   categories: MenuCategory[];
   menuStatus: Status;
   branchStatus: Status;
+  /** Some branch delivers, now or scheduled, so addresses are worth managing. */
+  deliveryAvailable: boolean;
   reload: () => void;
 };
 
@@ -139,9 +141,13 @@ export function StorefrontProvider({ children }: { children: React.ReactNode }) 
   }, []);
 
   const categories = useMemo(() => visibleCategories(menu), [menu]);
+  const deliveryAvailable = useMemo(
+    () => branches.some(({ branch: { order_type_settings: types } }) => !!(types?.delivery?.isActive || types?.scheduledDelivery?.isActive)),
+    [branches],
+  );
   const value = useMemo(
-    () => ({ branches, branch, selectBranch, location, locate, menu, categories, menuStatus, branchStatus, reload }),
-    [branches, branch, selectBranch, location, locate, menu, categories, menuStatus, branchStatus, reload],
+    () => ({ branches, branch, selectBranch, location, locate, menu, categories, menuStatus, branchStatus, deliveryAvailable, reload }),
+    [branches, branch, selectBranch, location, locate, menu, categories, menuStatus, branchStatus, deliveryAvailable, reload],
   );
   return <StorefrontContext.Provider value={value}>{children}</StorefrontContext.Provider>;
 }

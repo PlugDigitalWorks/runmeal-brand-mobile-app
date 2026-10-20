@@ -83,7 +83,8 @@
     "signIn": "Sign in or create an account",
     "signOut": "Sign out",
     "orders": "Your orders",
-    "profile": "Profile"
+    "profile": "Profile",
+    "addresses": "My addresses"
   },
   "retry": "Try again",
   "rewards": {
@@ -224,21 +225,33 @@
   },
   "address": {
     "title": "New address",
-    "street": "Street",
-    "buildingNumber": "Building no.",
-    "apartmentNumber": "Flat / apartment",
-    "district": "District / town",
-    "province": "City / county",
+    "editTitle": "Edit address",
+    "listTitle": "My addresses",
+    "firstLine": "Address",
+    "firstLinePlaceholder": "10 Downing Street, Flat 2",
     "postalCode": "Postcode",
     "phone": "Phone (+44…)",
     "useLocation": "Use my current location",
     "save": "Save address",
     "locationNeeded": "Allow location so the courier can find you.",
-    "required": "Fill in street, building, district, city and postcode.",
-    "failed": "Couldn't save the address."
+    "required": "Fill in the address and postcode.",
+    "phoneInvalid": "Enter the phone with its country code, e.g. +44 7700 900123.",
+    "notFound": "We couldn't find that address. Check it, or use your current location.",
+    "failed": "Couldn't save the address.",
+    "loadFailed": "Couldn't load your addresses.",
+    "empty": "No addresses yet",
+    "emptyBody": "Add one to get your order delivered.",
+    "add": "Add an address",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "deleteTitle": "Delete this address?",
+    "deleteFailed": "Couldn't delete the address.",
+    "default": "Default"
   },
   "common": {
-    "close": "Close"
+    "close": "Close",
+    "back": "Back"
   },
   "brand": {
     "loadError": "We couldn't reach the cafe. Check your connection and try again."

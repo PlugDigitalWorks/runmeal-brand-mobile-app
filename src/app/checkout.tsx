@@ -10,6 +10,7 @@ import { useCart } from '@/context/CartContext';
 import { useStorefront } from '@/context/StorefrontContext';
 import { useTable } from '@/context/TableContext';
 import { apiErrorMessage } from '@/lib/api-error';
+import { addressFirstLine, addressSecondLine } from '@/lib/address';
 import { isDelivery, isScheduled, orderTypesFor, paymentMethodsFor } from '@/lib/checkout';
 import { formatMoney } from '@/lib/money';
 import { setPendingPayment } from '@/lib/pending-payment';
@@ -239,13 +240,13 @@ export default function CheckoutScreen() {
               <Choice
                 key={address.id}
                 icon={<MapPin size={16} color={address.id === addressId ? colors.primary : colors.zinc400} />}
-                label={`${address.street} ${address.buildingNumber}${address.apartmentNumber ? `/${address.apartmentNumber}` : ''}`}
-                detail={`${address.district}, ${address.province} ${address.postalCode}`}
+                label={addressFirstLine(address)}
+                detail={addressSecondLine(address)}
                 selected={address.id === addressId}
                 onPress={() => setAddressId(address.id)}
               />
             ))}
-            <Pressable style={styles.addRow} onPress={() => router.push('/address-new')}>
+            <Pressable style={styles.addRow} onPress={() => router.push('/addresses/form')}>
               <Plus size={16} color={colors.primary} />
               <Text style={styles.addText}>{t('checkout.addAddress')}</Text>
             </Pressable>

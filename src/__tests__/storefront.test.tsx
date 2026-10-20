@@ -85,3 +85,26 @@ it('keeps a branch the customer picked when location arrives', async () => {
   expect(store.branches[0].branch.name).toBe('Twickenham');
   expect(store.branch?.name).toBe('Richmond');
 });
+
+it('offers addresses only when some branch delivers', async () => {
+  (getUserLocation as jest.Mock).mockResolvedValue(null);
+  const pickupOnly = { ...richmond, order_type_settings: { pickup: { isActive: true }, delivery: { isActive: false } } };
+  (listBrandBranches as jest.Mock).mockResolvedValue([pickupOnly, twickenham]);
+  const first = await render(
+    <StorefrontProvider>
+      <Probe onRender={capture} />
+    </StorefrontProvider>,
+  );
+  await waitFor(() => expect(store.branches).toHaveLength(2));
+  expect(store.deliveryAvailable).toBe(false);
+  await first.unmount();
+
+  const scheduled = { ...twickenham, order_type_settings: { scheduledDelivery: { isActive: true } } };
+  (listBrandBranches as jest.Mock).mockResolvedValue([pickupOnly, scheduled]);
+  await render(
+    <StorefrontProvider>
+      <Probe onRender={capture} />
+    </StorefrontProvider>,
+  );
+  await waitFor(() => expect(store.deliveryAvailable).toBe(true));
+});

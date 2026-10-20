@@ -101,9 +101,10 @@ export interface Address {
   neighborhood?: string;
   phoneE164?: string | null;
   postalCode: string;
+  /** Since brandfe's single-line form, the whole first line (street, house and flat number). */
   street: string;
-  buildingNumber: string;
-  apartmentNumber: string;
+  buildingNumber?: string | null;
+  apartmentNumber?: string | null;
   latitude: number;
   longitude: number;
   isActive: boolean;
@@ -115,8 +116,9 @@ export interface CreateAddressInput {
   district: string;
   postalCode: string;
   street: string;
-  buildingNumber: string;
-  apartmentNumber?: string;
+  /** Sent as null: the first line lives in `street`, and null clears an older separate value. */
+  buildingNumber?: string | null;
+  apartmentNumber?: string | null;
   latitude: number;
   longitude: number;
   phoneE164?: string;

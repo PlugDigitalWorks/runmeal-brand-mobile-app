@@ -2,8 +2,9 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { ChevronRight, Gift, LogOut, ReceiptText, User } from 'lucide-react-native';
+import { ChevronRight, Gift, LogOut, MapPin, ReceiptText, User } from 'lucide-react-native';
 import { useAuth } from '@/context/AuthContext';
+import { useStorefront } from '@/context/StorefrontContext';
 import { Button } from '@/ui/Button';
 import { colors, font, radius, space } from '@/theme';
 
@@ -11,6 +12,8 @@ export default function AccountScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { user, isMember, signOut } = useAuth();
+  // Pickup and table-only cafes never ask for an address, so the row would lead nowhere.
+  const { deliveryAvailable } = useStorefront();
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={[styles.content, { paddingTop: insets.top + 8 }]}>
@@ -41,6 +44,12 @@ export default function AccountScreen() {
           <Row icon={<ReceiptText size={20} color={colors.zinc700} />} label={t('account.orders')} onPress={() => router.push('/orders')} />
           <View style={styles.divider} />
           <Row icon={<Gift size={20} color={colors.zinc700} />} label={t('rewards.title')} onPress={() => router.push('/rewards')} />
+          {deliveryAvailable ? (
+            <>
+              <View style={styles.divider} />
+              <Row icon={<MapPin size={20} color={colors.zinc700} />} label={t('account.addresses')} onPress={() => router.push('/addresses')} />
+            </>
+          ) : null}
         </View>
       ) : null}
 

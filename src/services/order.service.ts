@@ -88,6 +88,15 @@ export async function createAddress(input: CreateAddressInput): Promise<Address>
   return data.data;
 }
 
+export async function updateAddress(addressId: string, input: Partial<CreateAddressInput>): Promise<Address> {
+  const { data } = await api.patch<ApiResponse<Address>>(`/addresses/${addressId}`, input);
+  return data.data;
+}
+
+export async function deleteAddress(addressId: string): Promise<void> {
+  await api.delete(`/addresses/${addressId}`);
+}
+
 /** Delivery goes to the active address; initialize payment carries no address id. */
 export async function setActiveAddress(addressId: string): Promise<void> {
   await api.patch(`/addresses/${addressId}/set-active`);
