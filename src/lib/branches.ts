@@ -12,7 +12,7 @@ export function distanceMeters(a: Coordinates, b: Coordinates): number {
   return 2 * 6_371_000 * Math.asin(Math.sqrt(h));
 }
 
-function branchCoordinates(branch: Branch): Coordinates | null {
+export function branchCoordinates(branch: Branch): Coordinates | null {
   const point = branch.locationGeog?.coordinates;
   return point ? { longitude: point[0], latitude: point[1] } : null;
 }
@@ -36,4 +36,20 @@ export function formatDistance(meters: number): string {
   const km = meters / 1000;
   const digits = km < 100 ? 1 : 0;
   return `${new Intl.NumberFormat('en-GB', { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(km)} km`;
+}
+
+/**
+ * Turn-by-turn directions to a branch in the phone's own maps app: Apple Maps
+ * on iOS, Google Maps on Android (both open these links in the app when it is
+ * installed). Uses the branch's coordinates, else its address; null when it
+ * has neither.
+ */
+export function directionsUrl(branch: Branch, platform: 'ios' | 'android'): string | null {
+  const at = branchCoordinates(branch);
+  const destination = at ? `${at.latitude},${at.longitude}` : branch.addressText?.trim();
+  if (!destination) return null;
+  const target = encodeURIComponent(destination);
+  return platform === 'ios'
+    ? `https://maps.apple.com/?daddr=${target}&dirflg=d`
+    : `https://www.google.com/maps/dir/?api=1&destination=${target}`;
 }

@@ -1,9 +1,9 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Check, MapPin } from 'lucide-react-native';
+import { Check, MapPin, Navigation } from 'lucide-react-native';
 import { useStorefront } from '@/context/StorefrontContext';
-import { formatDistance } from '@/lib/branches';
+import { directionsUrl, formatDistance } from '@/lib/branches';
 import { Button } from '@/ui/Button';
 import { colors, font, radius, space } from '@/theme';
 import type { Branch } from '@/types/branch';
@@ -36,6 +36,7 @@ export default function BranchesSheet() {
             types?.tableOrder?.isActive && t('branch.table'),
             types?.delivery?.isActive && t('branch.delivery'),
           ].filter(Boolean) as string[];
+          const directions = directionsUrl(branch, Platform.OS === 'ios' ? 'ios' : 'android');
           return (
             <Pressable
               key={branch.id}
@@ -45,7 +46,10 @@ export default function BranchesSheet() {
               accessibilityState={{ checked: on }}
             >
               <View style={{ flex: 1, gap: 3 }}>
-                <Text style={styles.name}>{branch.name}</Text>
+                <View style={styles.nameRow}>
+                  <Text style={styles.name}>{branch.name}</Text>
+                  {on ? <Check size={16} color={colors.primary} /> : null}
+                </View>
                 {branch.addressText ? (
                   <Text style={styles.address} numberOfLines={1}>
                     {branch.addressText}
@@ -67,7 +71,17 @@ export default function BranchesSheet() {
                   </View>
                 ) : null}
               </View>
-              {on ? <Check size={18} color={colors.primary} /> : null}
+              {directions ? (
+                <Pressable
+                  onPress={() => Linking.openURL(directions)}
+                  hitSlop={6}
+                  style={({ pressed }) => [styles.directions, pressed && { opacity: 0.7 }]}
+                  accessibilityRole="link"
+                  accessibilityLabel={t('branch.directionsTo', { name: branch.name })}
+                >
+                  <Navigation size={18} color={colors.primary} />
+                </Pressable>
+              ) : null}
             </Pressable>
           );
         })
@@ -81,10 +95,19 @@ const styles = StyleSheet.create({
   content: { padding: space.xl, paddingTop: space.xxl + 4, gap: 12, paddingBottom: 40 },
   title: { fontSize: font.heading, fontWeight: '800', color: colors.zinc900 },
   hint: { fontSize: font.body, color: colors.zinc500 },
-  card: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, padding: 14, borderRadius: radius.lg, borderWidth: 1 },
+  card: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: radius.lg, borderWidth: 1 },
   cardOn: { borderColor: colors.primary, backgroundColor: colors.orange50 },
   cardOff: { borderColor: colors.zinc200, backgroundColor: colors.card },
+  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   name: { fontSize: font.base, fontWeight: '700', color: colors.zinc800 },
+  directions: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.accent,
+  },
   address: { fontSize: font.small, color: colors.zinc400 },
   distanceRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   distance: { fontSize: font.small, fontWeight: '600', color: '#f97316' },

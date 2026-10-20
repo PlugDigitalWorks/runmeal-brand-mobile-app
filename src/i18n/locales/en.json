@@ -32,7 +32,8 @@
     "table": "Table",
     "delivery": "Delivery",
     "locationOff": "Location is off, so branches are sorted by name.",
-    "error": "Couldn't load branches."
+    "error": "Couldn't load branches.",
+    "directionsTo": "Directions to {{name}}"
   },
   "menu": {
     "title": "Menu",

@@ -1,5 +1,5 @@
 import type { Branch } from '@/types/branch';
-import { distanceMeters, formatDistance, sortBranches } from '../branches';
+import { directionsUrl, distanceMeters, formatDistance, sortBranches } from '../branches';
 
 const branch = (id: string, lng: number, lat: number): Branch => ({
   id,
@@ -34,4 +34,19 @@ it('formats distances like brandfe', () => {
 
 it('drops decimals and groups thousands for far-away branches', () => {
   expect(formatDistance(8_610_200)).toBe('8,610 km');
+});
+
+describe('directionsUrl', () => {
+  const richmond = { ...branch('Richmond', -0.3061, 51.4597), addressText: 'George Street 3, Richmond' };
+
+  it("opens Apple Maps on iOS and Google Maps on Android, to the branch's coordinates", () => {
+    expect(directionsUrl(richmond, 'ios')).toBe('https://maps.apple.com/?daddr=51.4597%2C-0.3061&dirflg=d');
+    expect(directionsUrl(richmond, 'android')).toBe('https://www.google.com/maps/dir/?api=1&destination=51.4597%2C-0.3061');
+  });
+
+  it('falls back to the address, and gives up without either', () => {
+    const noPoint = { ...richmond, locationGeog: null };
+    expect(directionsUrl(noPoint, 'android')).toBe('https://www.google.com/maps/dir/?api=1&destination=George%20Street%203%2C%20Richmond');
+    expect(directionsUrl({ ...noPoint, addressText: '  ' }, 'ios')).toBeNull();
+  });
 });
