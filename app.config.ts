@@ -1,6 +1,10 @@
 import type { ExpoConfig } from 'expo/config';
 import brand from './brand/brand.json';
 
+// A free (personal) Apple team cannot sign the Associated Domains capability, so a
+// build for a personal iPhone sets NO_ASSOCIATED_DOMAINS=1. Store builds keep it.
+const associatedDomains = process.env.NO_ASSOCIATED_DOMAINS === '1' ? undefined : brand.linkHosts.map((host) => `applinks:${host}`);
+
 // Paths the app opens once the brand's web host serves the link verification files.
 const androidLinkData = brand.linkHosts.flatMap((host) => [
   { scheme: 'https', host, path: '/' },
@@ -21,7 +25,7 @@ const config: ExpoConfig = {
   ios: {
     bundleIdentifier: brand.bundleIdentifier,
     supportsTablet: false,
-    associatedDomains: brand.linkHosts.map((host) => `applinks:${host}`),
+    associatedDomains,
   },
   android: {
     package: brand.androidPackage,

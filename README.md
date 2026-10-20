@@ -43,6 +43,15 @@ npx tsc --noEmit
 npx expo lint
 ```
 
+To run on your own iPhone with a free (personal) Apple team, which cannot sign
+Universal Links, generate the iOS project without them:
+
+```bash
+NO_ASSOCIATED_DOMAINS=1 npx expo prebuild -p ios --clean
+```
+
+Run a plain `npx expo prebuild -p ios --clean` again before a store build.
+
 ## Backend
 
 The app only uses existing endpoints. What the backend would need for a store
