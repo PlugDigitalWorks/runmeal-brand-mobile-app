@@ -16,8 +16,8 @@ The app was built without touching `runmeal-api` or `runmeal-brand-fe-website`. 
 
 ## 3. Native Google and Apple sign-in
 
-- **What:** `POST /auth/google/native` taking a Google `idToken` (verify with `OAuth2Client.verifyIdToken`, already used in `auth.service.ts`, accepting the iOS and Android client ids as audiences) and `POST /auth/apple` taking an Apple identity token. Alternatively, let the existing Google flow redirect to `dharmacoffee://auth?handoff=…` and redeem it with the existing `POST /auth/google/exchange`.
-- **Why:** the web Google flow returns to `{origin}/login?auth=success&handoff=…` (`auth.controller.ts` around line 212). Google blocks OAuth inside embedded WebViews, and an `https` callback can only be caught by the app once universal links are live (item 6). App Store guideline 4.8 requires Sign in with Apple whenever Google sign-in is offered, so the app ships with email code and password only.
+- **What:** `POST /auth/google/native { idToken, client }` and `POST /auth/apple { identityToken, authorizationCode, nonce, firstName?, lastName?, client }`, both answering like `POST /auth/verify-otp`. The full contract, account rules, errors and console setup are in [BACKEND_REQUEST_SOCIAL_SIGN_IN.md](BACKEND_REQUEST_SOCIAL_SIGN_IN.md).
+- **Why:** the web Google flow returns to the brand's website (`{origin}/login?auth=success&handoff=…`), which the app can only catch once Universal Links are live (item 6), and Google blocks sign-in inside embedded WebViews. App Store guideline 4.8 requires Sign in with Apple whenever Google sign-in is offered. Until both endpoints ship, the app signs in with an emailed code or a password.
 
 ## 4. Payment return target for the app
 
