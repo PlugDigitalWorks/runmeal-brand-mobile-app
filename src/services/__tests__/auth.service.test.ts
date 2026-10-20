@@ -1,7 +1,7 @@
 import { api } from '@/lib/api';
-import { loginWithApple, loginWithGoogle, loginWithPassword, registerWithOtp, requestOtpLogin, verifyOtp } from '../auth.service';
+import { deleteAccount, loginWithApple, loginWithGoogle, loginWithPassword, registerWithOtp, requestOtpLogin, verifyOtp } from '../auth.service';
 
-jest.mock('@/lib/api', () => ({ AUTH_CLIENT: 'user', api: { post: jest.fn(), get: jest.fn() } }));
+jest.mock('@/lib/api', () => ({ AUTH_CLIENT: 'user', api: { post: jest.fn(), get: jest.fn(), delete: jest.fn() } }));
 const post = api.post as jest.Mock;
 const user = { id: 'u1', email: 'a@b.co', firstName: 'Ada', lastName: 'L', role: 'CUSTOMER' };
 
@@ -44,3 +44,9 @@ it('signs in with a Google ID token through the native route, as a customer', as
   expect(post).toHaveBeenCalledWith('/auth/google/native', { idToken: 'google-jwt', client: 'user' });
 });
 
+
+it("deletes the caller's own account", async () => {
+  (api.delete as jest.Mock).mockResolvedValue({ data: { status: true } });
+  await deleteAccount();
+  expect(api.delete).toHaveBeenCalledWith('/profile');
+});

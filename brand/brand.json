@@ -7,6 +7,10 @@
   "appleTeamId": "T776LGPKWZ",
   "host": "order.dharmacoffee.uk",
   "linkHosts": ["order.dharmacoffee.uk"],
+  "legal": {
+    "privacyUrl": "https://order.dharmacoffee.uk/pages/privacy-policy",
+    "termsUrl": "https://order.dharmacoffee.uk/pages/terms"
+  },
   "splashLogoWidth": 220,
   "signIn": { "apple": true, "google": true },
   "google": {

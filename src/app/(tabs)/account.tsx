@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ChevronRight, Gift, LogOut, MapPin, ReceiptText, User } from 'lucide-react-native';
 import { useAuth } from '@/context/AuthContext';
 import { useStorefront } from '@/context/StorefrontContext';
+import { openLegalPage } from '@/lib/legal';
 import { Button } from '@/ui/Button';
 import { colors, font, radius, space } from '@/theme';
 
@@ -59,6 +60,21 @@ export default function AccountScreen() {
           <Text style={styles.signOutText}>{t('account.signOut')}</Text>
         </Pressable>
       ) : null}
+
+      <View style={styles.legal}>
+        <Pressable onPress={() => openLegalPage('privacy')} hitSlop={8}>
+          <Text style={styles.legalLink}>{t('account.privacy')}</Text>
+        </Pressable>
+        <Text style={styles.legalDot}>·</Text>
+        <Pressable onPress={() => openLegalPage('terms')} hitSlop={8}>
+          <Text style={styles.legalLink}>{t('account.terms')}</Text>
+        </Pressable>
+      </View>
+      {isMember ? (
+        <Pressable onPress={() => router.push('/delete-account')} hitSlop={8} style={styles.deleteLink}>
+          <Text style={styles.deleteText}>{t('account.deleteAccount')}</Text>
+        </Pressable>
+      ) : null}
     </ScrollView>
   );
 }
@@ -108,4 +124,9 @@ const styles = StyleSheet.create({
   divider: { height: StyleSheet.hairlineWidth, backgroundColor: colors.zinc100 },
   signOut: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 16, marginTop: 8 },
   signOutText: { color: colors.destructive, fontWeight: '700', fontSize: font.base },
+  legal: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 8 },
+  legalLink: { color: colors.zinc500, fontSize: font.small, fontWeight: '600' },
+  legalDot: { color: colors.zinc400, fontSize: font.small },
+  deleteLink: { alignSelf: 'center', paddingVertical: 8 },
+  deleteText: { color: colors.zinc400, fontSize: font.small, textDecorationLine: 'underline' },
 });

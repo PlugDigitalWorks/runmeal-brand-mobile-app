@@ -46,6 +46,14 @@ const config: ExpoConfig = {
       foregroundImage: './brand/assets/adaptive-icon.png',
     },
     predictiveBackGestureEnabled: false,
+    // Pulled in by libraries but never used; Play asks for a reason for each one it sees.
+    blockedPermissions: [
+      'android.permission.RECORD_AUDIO',
+      'android.permission.SYSTEM_ALERT_WINDOW',
+      'android.permission.READ_EXTERNAL_STORAGE',
+      'android.permission.WRITE_EXTERNAL_STORAGE',
+      'android.permission.ACCESS_BACKGROUND_LOCATION',
+    ],
     intentFilters: [
       {
         action: 'VIEW',
@@ -69,14 +77,23 @@ const config: ExpoConfig = {
         imageWidth: brand.splashLogoWidth,
       },
     ],
+    // Only "while using the app": App Review rejects purpose strings the app never asks for, or generic ones.
     [
       'expo-location',
-      { locationWhenInUsePermission: 'We use your location to show the branch nearest to you.' },
+      {
+        locationWhenInUsePermission:
+          'Your location shows the branch nearest to you and fills in your delivery address. For example, the closest cafe is listed first.',
+        locationAlwaysAndWhenInUsePermission: false,
+        locationAlwaysPermission: false,
+        locationFullAccuracyPermission: false,
+        motionUsagePermission: false,
+      },
     ],
     [
       'expo-camera',
       {
-        cameraPermission: 'Camera access lets you scan the QR code on your table.',
+        cameraPermission: 'The camera scans the QR code on your table so you can order to that table.',
+        microphonePermission: false,
         recordAudioAndroid: false,
       },
     ],
