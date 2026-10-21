@@ -1,6 +1,8 @@
 import { AxiosError, AxiosHeaders, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 import * as SecureStore from 'expo-secure-store';
-import { api, onSessionExpired } from '../api';
+import { waitFor } from '@testing-library/react-native';
+import { deleteAccount } from '@/services/auth.service';
+import { api, onSessionExpired, SessionEndedError } from '../api';
 import { clearSession, getTokens, saveSession } from '../session';
 
 type Reply = { status: number; data: unknown };
@@ -93,4 +95,47 @@ it('does not try to refresh without a refresh token', async () => {
   replies = [() => ({ status: 401, data: {} })];
   await expect(api.get('/profile')).rejects.toBeInstanceOf(AxiosError);
   expect(calls).toHaveLength(1);
+});
+
+it('drops a refresh that finishes after the session ended, so deleted tokens never come back', async () => {
+  await saveSession({ accessToken: 'old', refreshToken: 'r1', sid: 's1', user });
+  let finishRefresh: (response: AxiosResponse) => void = () => undefined;
+  api.defaults.adapter = (config) => {
+    calls.push(config);
+    if (config.url === '/auth/refresh') {
+      return new Promise<AxiosResponse>((resolve) => {
+        finishRefresh = resolve;
+      });
+    }
+    const response = { status: 401, data: {}, headers: {}, config, statusText: '401' } as AxiosResponse;
+    return Promise.reject(new AxiosError('fail', '401', config, undefined, response));
+  };
+
+  const pending = api.get('/orders/my');
+  await waitFor(() => expect(calls.map((c) => c.url)).toEqual(['/orders/my', '/auth/refresh']));
+  // The account is deleted and the session cleared while the refresh is still on the wire.
+  await clearSession();
+  finishRefresh({
+    status: 200,
+    data: { status: true, data: { accessToken: 'revived', refreshToken: 'r2', sid: 's1' } },
+    headers: {},
+    config: calls[1],
+    statusText: '200',
+  } as AxiosResponse);
+
+  await expect(pending).rejects.toBeInstanceOf(SessionEndedError);
+  expect(getTokens()).toBeNull();
+  expect(await SecureStore.getItemAsync('rm_session')).toBeNull();
+  expect(calls).toHaveLength(2);
+});
+
+it('deletes the account with an empty 204 answer and no body', async () => {
+  await saveSession({ accessToken: 'tok', refreshToken: 'r1', sid: 's1', user });
+  replies = [() => ({ status: 204, data: '' })];
+
+  await expect(deleteAccount()).resolves.toBeUndefined();
+  expect(calls[0].method).toBe('delete');
+  expect(calls[0].url).toBe('/profile');
+  expect(calls[0].data).toBeUndefined();
+  expect(sentAuth[0]).toBe('Bearer tok');
 });

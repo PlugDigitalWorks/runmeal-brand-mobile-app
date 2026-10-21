@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { onSessionExpired } from '@/lib/api';
-import { clearSession, loadSession, saveSession, saveUser } from '@/lib/session';
+import { clearPendingPayment } from '@/lib/pending-payment';
+import { clearSession, getSessionGeneration, loadSession, saveSession, saveUser } from '@/lib/session';
 import { getProfile, logout } from '@/services/auth.service';
 import type { AuthResponse, User } from '@/types/auth';
 
@@ -13,6 +14,8 @@ type AuthValue = {
   isMember: boolean;
   signIn: (auth: AuthResponse) => Promise<void>;
   signOut: () => Promise<void>;
+  /** Forgets the session on this phone without telling the API: for an account the API has already deleted. */
+  endLocalSession: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthValue | undefined>(undefined);
@@ -34,11 +37,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // goes through the silent token refresh and signs out only if the refresh token is dead.
       setUser(session.user);
       setStatus('signedIn');
+      const generation = getSessionGeneration();
       try {
         const profile = await getProfile();
-        if (cancelled) return;
+        // Signed out or deleted meanwhile: this profile belongs to a session that is gone.
+        if (cancelled || !(await saveUser(profile, generation))) return;
         setUser(profile);
-        await saveUser(profile);
       } catch {
         // Offline or a transient error: keep the stored session.
       }
@@ -63,20 +67,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setStatus('signedIn');
   }, []);
 
+  const endLocalSession = useCallback(async () => {
+    await clearSession();
+    clearPendingPayment();
+    setUser(null);
+    setStatus('signedOut');
+  }, []);
+
   const signOut = useCallback(async () => {
     try {
       await logout();
     } catch {
       // The local session goes either way, as in brandfe.
     }
-    await clearSession();
-    setUser(null);
-    setStatus('signedOut');
-  }, []);
+    await endLocalSession();
+  }, [endLocalSession]);
 
   const value = useMemo(
-    () => ({ user, status, isMember: !!user, signIn, signOut }),
-    [user, status, signIn, signOut],
+    () => ({ user, status, isMember: !!user, signIn, signOut, endLocalSession }),
+    [user, status, signIn, signOut, endLocalSession],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -5,23 +5,38 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { TriangleAlert, X } from 'lucide-react-native';
 import { useAuth } from '@/context/AuthContext';
-import { apiErrorMessage } from '@/lib/api-error';
+import { classifyDeleteError, type DeleteFailure } from '@/lib/account-deletion';
+import { expireSession } from '@/lib/api';
 import { deleteAccount } from '@/services/auth.service';
 import { colors, font, radius, space } from '@/theme';
 
 /**
  * App Store guideline 5.1.1(v) and Google Play's account deletion policy: an
- * account made in the app can be deleted in the app. Asks once more, then
- * deletes it on the API and signs out here.
+ * account made in the app can be deleted in the app. Asks once more, sends
+ * DELETE /profile once, and on success forgets the session on this phone only:
+ * the API has already ended it, so there is no logout call.
  */
 export default function DeleteAccountScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { user, signOut } = useAuth();
+  const { user, endLocalSession } = useAuth();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // A second tap mid-request would send a second delete.
   const inFlight = useRef(false);
+
+  const messageFor = (failure: Exclude<DeleteFailure, { kind: 'expired' }>): string => {
+    switch (failure.kind) {
+      case 'refused':
+        return t(`common.apiErrors.${failure.code}`);
+      case 'forbidden':
+        return failure.message ?? t('deleteAccount.failed');
+      case 'unknown':
+        return t('deleteAccount.uncertain');
+      default:
+        return t('deleteAccount.failed');
+    }
+  };
 
   const remove = async () => {
     if (inFlight.current) return;
@@ -31,13 +46,23 @@ export default function DeleteAccountScreen() {
     try {
       await deleteAccount();
     } catch (e) {
-      setError(apiErrorMessage(e, t('deleteAccount.failed')));
+      const failure = classifyDeleteError(e);
+      if (failure.kind === 'expired') {
+        // The usual signed-out path; nothing was deleted, so no success message.
+        await expireSession();
+        router.back();
+        return;
+      }
+      // Never resent on its own: the customer decides whether to try again.
+      setError(messageFor(failure));
       inFlight.current = false;
       setBusy(false);
       return;
     }
-    await signOut();
-    router.back();
+    await endLocalSession();
+    // Back to the storefront root, so no screen of the deleted account stays in the history.
+    router.dismissAll();
+    router.push('/login');
     Alert.alert(t('deleteAccount.doneTitle'), t('deleteAccount.doneBody'));
   };
 
@@ -61,7 +86,7 @@ export default function DeleteAccountScreen() {
       </View>
       {user?.email ? <Text style={styles.body}>{t('deleteAccount.account', { email: user.email })}</Text> : null}
       <Text style={styles.heading}>{t('deleteAccount.whatHappens')}</Text>
-      {(['profile', 'loyalty', 'signIn', 'orders'] as const).map((key) => (
+      {(['profile', 'loyalty', 'wallet', 'signIn', 'orders'] as const).map((key) => (
         <View key={key} style={styles.bullet}>
           <Text style={styles.dot}>•</Text>
           <Text style={styles.body}>{t(`deleteAccount.points.${key}`)}</Text>

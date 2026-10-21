@@ -62,8 +62,8 @@ export async function logout(): Promise<void> {
 }
 
 /**
- * Requested from runmeal-api (docs/BACKEND_REQUEST_ACCOUNT_DELETION.md): deletes the
- * signed-in account, revokes its Apple grant and ends every session.
+ * runmeal-api DELETE /profile: deletes the signed-in account and ends every session.
+ * No body; the bearer token names the account. Answers 204 with an empty body.
  */
 export async function deleteAccount(): Promise<void> {
   await api.delete('/profile');

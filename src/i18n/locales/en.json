@@ -254,30 +254,37 @@
   },
   "common": {
     "close": "Close",
-    "back": "Back"
+    "back": "Back",
+    "apiErrors": {
+      "USER_ACCOUNT_DELETE_BALANCE_REMAINING": "Your wallet balance must be settled before deleting your account.",
+      "USER_ACCOUNT_DELETE_ACTIVE_OPERATION": "Complete your active orders and pending payments before deleting your account.",
+      "USER_ACCOUNT_DELETE_PROVIDER_UNAVAILABLE": "Your account could not be deleted. Please try again later."
+    }
   },
   "brand": {
     "loadError": "We couldn't reach the cafe. Check your connection and try again."
   },
   "deleteAccount": {
     "title": "Delete account",
-    "warning": "This can't be undone.",
+    "warning": "This can't be undone. Your account closes for good.",
     "account": "Signed in as {{email}}.",
     "whatHappens": "What happens",
     "points": {
-      "profile": "Your name, email, phone and saved addresses are deleted.",
+      "profile": "Your name, email, phone number and saved addresses are deleted.",
       "loyalty": "Your loyalty stamps and rewards are lost.",
-      "signIn": "You're signed out everywhere, and Sign in with Apple or Google is disconnected.",
-      "orders": "Past order records are kept without your details, as the law requires for receipts."
+      "wallet": "A loyalty card you added to Apple Wallet or Google Wallet is withdrawn too. It may take a while to update on your phone.",
+      "signIn": "You're signed out on every device, and Sign in with Apple or Google is disconnected.",
+      "orders": "Your past orders and payment records are kept, as the law requires."
     },
     "button": "Delete my account",
     "deleting": "Deleting…",
     "confirmTitle": "Delete your account?",
-    "confirmBody": "Your account and loyalty stamps will be gone for good.",
+    "confirmBody": "Your account closes for good. This can't be undone.",
     "confirm": "Delete",
     "failed": "Couldn't delete your account. Try again.",
     "doneTitle": "Account deleted",
-    "doneBody": "Your account has been deleted."
+    "doneBody": "Your account has been deleted.",
+    "uncertain": "We couldn't confirm whether your account was deleted. Check your connection, then open this screen again."
   },
   "legal": {
     "updated": "Last updated {{date}}"

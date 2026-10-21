@@ -75,3 +75,16 @@ it('hides the previous cart after sign-out', async () => {
   expect(cart.cartId).toBeNull();
   expect(cart.lines).toEqual([]);
 });
+
+it("never shows the previous account's cart to a new account", async () => {
+  signIn();
+  (getActiveCart as jest.Mock).mockResolvedValueOnce(remoteCart);
+  const view = await render(<CartProvider><Probe onRender={capture} /></CartProvider>);
+  await waitFor(() => expect(cart.lines).toHaveLength(1));
+
+  // Deleted and signed up again with the same email: a different user id, cart not loaded yet.
+  mockAuth.user = { id: 'u2' };
+  (getActiveCart as jest.Mock).mockReturnValueOnce(new Promise(() => undefined));
+  await view.rerender(<CartProvider><Probe onRender={capture} /></CartProvider>);
+  expect(cart.lines).toEqual([]);
+});

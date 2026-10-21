@@ -7,6 +7,16 @@ const TOKENS_KEY = 'rm_session';
 const USER_KEY = 'rm_user';
 
 let tokens: SessionTokens | null = null;
+/**
+ * Bumped by every sign-in and sign-out. Work that started under one session
+ * (a token refresh, a profile fetch) checks it before writing, so a response
+ * that lands after sign-out or account deletion cannot bring the old session back.
+ */
+let generation = 0;
+
+export function getSessionGeneration(): number {
+  return generation;
+}
 
 /** Read synchronously by the axios interceptor. */
 export function getAccessToken(): string | null {
@@ -39,6 +49,7 @@ export async function loadSession(): Promise<{ tokens: SessionTokens | null; use
 }
 
 export async function saveSession({ user, ...next }: AuthResponse): Promise<void> {
+  generation += 1;
   tokens = { accessToken: next.accessToken, refreshToken: next.refreshToken, sid: next.sid };
   await Promise.all([
     SecureStore.setItemAsync(TOKENS_KEY, JSON.stringify(tokens)),
@@ -46,21 +57,30 @@ export async function saveSession({ user, ...next }: AuthResponse): Promise<void
   ]);
 }
 
-/** A refresh may or may not rotate the refresh token and sid; keep what it does not send. */
-export async function saveTokens(next: SessionTokens): Promise<void> {
+/**
+ * A refresh may or may not rotate the refresh token and sid; keep what it does not send.
+ * With `forGeneration`, writes only if that session is still the current one; returns whether it wrote.
+ */
+export async function saveTokens(next: SessionTokens, forGeneration?: number): Promise<boolean> {
+  if (forGeneration !== undefined && (forGeneration !== generation || !tokens)) return false;
   tokens = {
     accessToken: next.accessToken,
     refreshToken: next.refreshToken ?? tokens?.refreshToken,
     sid: next.sid ?? tokens?.sid,
   };
   await SecureStore.setItemAsync(TOKENS_KEY, JSON.stringify(tokens));
+  return true;
 }
 
-export async function saveUser(user: User): Promise<void> {
+/** Stores a refreshed profile, unless the session it was fetched for has ended since. */
+export async function saveUser(user: User, forGeneration = generation): Promise<boolean> {
+  if (forGeneration !== generation || !tokens) return false;
   await AsyncStorage.setItem(USER_KEY, JSON.stringify(user));
+  return true;
 }
 
 export async function clearSession(): Promise<void> {
+  generation += 1;
   tokens = null;
   await Promise.all([SecureStore.deleteItemAsync(TOKENS_KEY), AsyncStorage.removeItem(USER_KEY)]);
 }

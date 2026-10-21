@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
-import { clearSession, getAccessToken, getTokens, loadSession, saveSession, saveTokens } from '../session';
+import { clearSession, getAccessToken, getSessionGeneration, getTokens, loadSession, saveSession, saveTokens, saveUser } from '../session';
 
 const user = { id: 'u1', email: 'a@b.co', firstName: 'Ada', lastName: 'L', role: 'CUSTOMER' };
 
@@ -41,4 +41,16 @@ it('forgets everything on sign-out', async () => {
   await clearSession();
   expect(getAccessToken()).toBeNull();
   expect(await loadSession()).toEqual({ tokens: null, user: null });
+});
+
+it('does not write back a profile or tokens for a session that ended meanwhile', async () => {
+  await saveSession({ accessToken: 'a1', refreshToken: 'r1', sid: 's1', user });
+  const generation = getSessionGeneration();
+  await clearSession();
+
+  expect(await saveUser(user, generation)).toBe(false);
+  expect(await saveTokens({ accessToken: 'a2', refreshToken: 'r2' }, generation)).toBe(false);
+  expect(getTokens()).toBeNull();
+  expect(await SecureStore.getItemAsync('rm_session')).toBeNull();
+  expect(await AsyncStorage.getItem('rm_user')).toBeNull();
 });

@@ -32,6 +32,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const branchId = branch?.id ?? null;
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(false);
+  // Signing out, or a new account under the same email, never shows the previous account's cart.
+  const [cartOwner, setCartOwner] = useState(user?.id ?? null);
+  if (cartOwner !== (user?.id ?? null)) {
+    setCartOwner(user?.id ?? null);
+    setCart(null);
+  }
 
   const loadRemote = useCallback(async () => {
     if (!branchId) return setCart(null);

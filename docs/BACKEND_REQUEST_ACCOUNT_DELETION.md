@@ -2,7 +2,7 @@
 
 **For:** runmeal-api team
 **From:** runmeal-brand-mobile-app (Dharma Coffee, iOS `uk.dharmacoffee.ios`, Android `uk.dharmacoffee.app`)
-**Status:** requested. The app's "Delete account" screen is built against this contract and mocked in tests. It cannot ship to the stores until the endpoint is live.
+**Status:** shipped by the API as `DELETE /profile` → `204 No Content`, refusing with `USER_ACCOUNT_DELETE_BALANCE_REMAINING` (409), `USER_ACCOUNT_DELETE_ACTIVE_OPERATION` (409) or `USER_ACCOUNT_DELETE_PROVIDER_UNAVAILABLE` (503). The app follows that contract; the rest of this page is the original request.
 
 ## Why
 

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ChevronRight, Gift, LogOut, MapPin, ReceiptText, User } from 'lucide-react-native';
 import { useAuth } from '@/context/AuthContext';
 import { useStorefront } from '@/context/StorefrontContext';
+import { canDeleteAccount } from '@/types/auth';
 import { Button } from '@/ui/Button';
 import { colors, font, radius, space } from '@/theme';
 
@@ -69,7 +70,7 @@ export default function AccountScreen() {
           <Text style={styles.legalLink}>{t('account.terms')}</Text>
         </Pressable>
       </View>
-      {isMember ? (
+      {canDeleteAccount(user) ? (
         <Pressable onPress={() => router.push('/delete-account')} hitSlop={8} style={styles.deleteLink}>
           <Text style={styles.deleteText}>{t('account.deleteAccount')}</Text>
         </Pressable>
