@@ -127,3 +127,14 @@ Both calls need a client secret JWT signed with the team's Sign in with Apple ke
 - **Google Cloud:** point the iOS OAuth client (`709162763845-8gb882qbbtol9s9ls30tb54930uvk763`) at bundle ID `uk.dharmacoffee.ios`, or create a new iOS client for it and send the app its client ID. The Android client is unchanged.
 - **runmeal-api env:** `APPLE_SIGNIN_BUNDLE_ID=uk.dharmacoffee.ios` (staging and production).
 
+
+## Update, 21 October 2026: Google Play signing keys
+
+The app is now on Google Play internal testing. Play re-signs every install with its own app signing key, so Google sign-in from a Play install fails until the Android OAuth client for `uk.dharmacoffee.app` also knows these fingerprints:
+
+| Key | SHA-1 |
+| --- | --- |
+| Play app signing key (what Play installs are signed with) | `AC:7A:27:64:D8:ED:D7:47:B4:1B:AF:33:57:A5:D3:0C:F0:C2:8B:A5` |
+| Upload key (local release builds) | `92:DF:4A:4F:3D:FB:76:25:DE:72:D3:2F:97:32:CF:B8:0F:6A:5D:1E` |
+
+Add both to the Android OAuth client in Google Cloud Console (or create one Android client per fingerprint). The debug SHA-1 above can stay for test APKs.

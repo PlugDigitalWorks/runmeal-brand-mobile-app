@@ -52,6 +52,32 @@ PERSONAL_TEAM=1 npx expo prebuild -p ios --clean
 
 Run a plain `npx expo prebuild -p ios --clean` again before a store build.
 
+## Play upload key
+
+Google Play builds are signed with the brand's upload key; Play re-signs them
+with the app signing key it keeps. The key never goes in this repo. Its
+location and passwords live in `~/.gradle/gradle.properties`, under names made
+from the brand slug (`dharma-coffee` → `DHARMA_COFFEE_UPLOAD_*`):
+
+```properties
+DHARMA_COFFEE_UPLOAD_STORE_FILE=/Users/you/.android-keys/dharma-coffee-upload.jks
+DHARMA_COFFEE_UPLOAD_KEY_ALIAS=upload
+DHARMA_COFFEE_UPLOAD_STORE_PASSWORD=…
+DHARMA_COFFEE_UPLOAD_KEY_PASSWORD=…
+```
+
+With those set, a release build is ready for Play:
+
+```bash
+npx expo prebuild -p android
+cd android && ./gradlew bundleRelease   # android/app/build/outputs/bundle/release/app-release.aab
+```
+
+Without them, release builds fall back to the debug key: fine for test APKs,
+refused by Play. Raise `android.versionCode` in `app.config.ts` for every upload.
+Keep a copy of the `.jks` and its password in the team's password manager; a
+lost upload key can only be reset through Play support.
+
 ## Backend
 
 The app only uses existing endpoints. What the backend would need for a store
