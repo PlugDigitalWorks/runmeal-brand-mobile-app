@@ -1,0 +1,29 @@
+{
+  "common": {
+    "close": "Kapat",
+    "back": "Geri",
+    "apiErrors": {
+      "USER_ACCOUNT_DELETE_BALANCE_REMAINING": "Hesabınızı silmeden önce cüzdan bakiyenizin kapatılması gerekiyor.",
+      "USER_ACCOUNT_DELETE_ACTIVE_OPERATION": "Hesabınızı silmeden önce aktif siparişlerinizin ve bekleyen ödemelerinizin tamamlanması gerekiyor.",
+      "USER_ACCOUNT_DELETE_PROVIDER_UNAVAILABLE": "Hesabınız silinemedi. Lütfen daha sonra tekrar deneyin.",
+      "PUSH_GUEST_NOT_ALLOWED": "Bildirimleri açmak için giriş yapın.",
+      "NOTIFICATION_NOT_FOUND": "Bildirim bulunamadı."
+    }
+  },
+  "notifications": {
+    "title": "Bildirimlerim",
+    "empty": "Henüz bildirimin yok",
+    "loadError": "Bildirimlerin yüklenemedi. Tekrar denemek için aşağı çek.",
+    "readAll": "Tümünü okundu yap",
+    "unread": "Okunmadı",
+    "off": "Bu uygulama için bildirimler kapalı.",
+    "openSettings": "Ayarlardan aç",
+    "channel": "Sipariş güncellemeleri",
+    "permission": {
+      "title": "Siparişin hazır olunca haberin olsun",
+      "body": "Siparişin onaylandığında, hazır olduğunda ya da yola çıktığında sana haber verelim.",
+      "allow": "Bildirimleri aç",
+      "later": "Şimdi değil"
+    }
+  }
+}

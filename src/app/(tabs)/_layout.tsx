@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { House, QrCode, ShoppingCart, User, UtensilsCrossed } from 'lucide-react-native';
 import { useBrand } from '@/context/BrandContext';
 import { useCart } from '@/context/CartContext';
+import { useNotifications } from '@/context/NotificationsContext';
 import { colors, shadow } from '@/theme';
 
 /** Kahve Dünyası / Starbucks style bar: the table QR scanner sits raised in the middle. */
@@ -27,6 +28,7 @@ export default function TabsLayout() {
   const { t } = useTranslation();
   const { brand, ready } = useBrand();
   const { summary } = useCart();
+  const { unreadCount } = useNotifications();
   if (ready && !brand) return <Redirect href="/brands" />;
 
   return (
@@ -55,7 +57,15 @@ export default function TabsLayout() {
           tabBarBadgeStyle: { backgroundColor: colors.primary, color: colors.primaryForeground, fontSize: 11 },
         }}
       />
-      <Tabs.Screen name="account" options={{ title: t('tabs.account'), tabBarIcon: ({ color }) => <User size={22} color={color} /> }} />
+      <Tabs.Screen
+        name="account"
+        options={{
+          title: t('tabs.account'),
+          tabBarIcon: ({ color }) => <User size={22} color={color} />,
+          tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
+          tabBarBadgeStyle: { backgroundColor: colors.primary, color: colors.primaryForeground, fontSize: 11 },
+        }}
+      />
     </Tabs>
   );
 }

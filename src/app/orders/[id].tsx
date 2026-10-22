@@ -9,7 +9,8 @@ import { useBrand } from '@/context/BrandContext';
 import { useStorefront } from '@/context/StorefrontContext';
 import { formatMoney } from '@/lib/money';
 import { humanize, itemOptions, itemQuantity, itemTotal } from '@/lib/order-display';
-import { getOrder } from '@/services/order.service';
+import { useOrderLiveStatus } from '@/lib/use-order-live-status';
+import { getMyOrders, getOrder } from '@/services/order.service';
 import { Button } from '@/ui/Button';
 import { EmptyState } from '@/ui/EmptyState';
 import { colors, font, radius, space } from '@/theme';
@@ -25,10 +26,23 @@ export default function OrderDetailScreen() {
   const [order, setOrder] = useState<OrderDetails | null>(null);
   const [failed, setFailed] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const branchId = paramBranch ?? branch?.id ?? '';
+  // A notification links to /orders/<id> without the branch the API needs: look it up in the customer's orders.
+  const [foundBranch, setFoundBranch] = useState<string | null | undefined>(paramBranch ? null : undefined);
+  const branchId = paramBranch ?? (foundBranch === undefined ? '' : (foundBranch ?? branch?.id ?? ''));
+
+  useEffect(() => {
+    if (paramBranch) return;
+    let cancelled = false;
+    getMyOrders()
+      .then((orders) => !cancelled && setFoundBranch(orders.find((o) => o.id === id)?.branchId ?? null))
+      .catch(() => !cancelled && setFoundBranch(null));
+    return () => {
+      cancelled = true;
+    };
+  }, [id, paramBranch]);
 
   const load = useCallback(async () => {
-    if (!brand) return;
+    if (!brand || !branchId) return;
     try {
       setOrder(await getOrder(id, branchId, brand.brandId));
       setFailed(false);
@@ -38,7 +52,7 @@ export default function OrderDetailScreen() {
   }, [id, branchId, brand]);
 
   useEffect(() => {
-    if (!brand) return;
+    if (!brand || !branchId) return;
     let cancelled = false;
     getOrder(id, branchId, brand.brandId)
       .then((next) => {
@@ -57,6 +71,10 @@ export default function OrderDetailScreen() {
     await load();
     setRefreshing(false);
   };
+
+  // Live while the screen is open; the stream's first message is the current status.
+  const live = useOrderLiveStatus({ orderId: id, branchId, brandId: brand?.brandId, onUnavailable: load });
+  const status = live?.status ?? order?.status;
 
   const currency = order?.currency ?? brand?.currency ?? 'GBP';
   // After checkout the stack holds cart → checkout → this; going home drops them all.
@@ -92,7 +110,7 @@ export default function OrderDetailScreen() {
           <View style={styles.card}>
             <View style={styles.cardTop}>
               <Text style={styles.number}>{t('orders.number', { number: order.orderNumber })}</Text>
-              <StatusPill status={order.status} />
+              <StatusPill status={status ?? order.status} />
             </View>
             <Text style={styles.date}>{new Date(order.createdAt).toLocaleString('en-GB')}</Text>
             {order.orderType ? <Info label={t('orders.type')} value={t(`checkout.${order.orderType}`, { defaultValue: humanize(order.orderType) })} /> : null}

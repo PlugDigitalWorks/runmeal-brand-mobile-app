@@ -55,8 +55,8 @@ export class SessionEndedError extends Error {
 
 let refreshing: Promise<string> | null = null;
 
-/** One refresh for every request that hit a 401 at the same time. */
-function refreshAccessToken(): Promise<string> {
+/** One refresh for every request that hit a 401 at the same time; also used by the order status stream. */
+export function refreshAccessToken(): Promise<string> {
   refreshing ??= (async () => {
     const current = getTokens();
     const generation = getSessionGeneration();

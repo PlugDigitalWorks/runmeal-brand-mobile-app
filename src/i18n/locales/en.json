@@ -258,7 +258,9 @@
     "apiErrors": {
       "USER_ACCOUNT_DELETE_BALANCE_REMAINING": "Your wallet balance must be settled before deleting your account.",
       "USER_ACCOUNT_DELETE_ACTIVE_OPERATION": "Complete your active orders and pending payments before deleting your account.",
-      "USER_ACCOUNT_DELETE_PROVIDER_UNAVAILABLE": "Your account could not be deleted. Please try again later."
+      "USER_ACCOUNT_DELETE_PROVIDER_UNAVAILABLE": "Your account could not be deleted. Please try again later.",
+      "PUSH_GUEST_NOT_ALLOWED": "Sign in to turn on notifications.",
+      "NOTIFICATION_NOT_FOUND": "Notification not found."
     }
   },
   "brand": {
@@ -288,5 +290,21 @@
   },
   "legal": {
     "updated": "Last updated {{date}}"
+  },
+  "notifications": {
+    "title": "My notifications",
+    "empty": "No notifications yet",
+    "loadError": "Couldn't load your notifications. Pull down to try again.",
+    "readAll": "Mark all as read",
+    "unread": "Unread",
+    "off": "Notifications are off for this app.",
+    "openSettings": "Turn them on in Settings",
+    "channel": "Order updates",
+    "permission": {
+      "title": "Know when your order is ready",
+      "body": "We'll let you know when your order is confirmed, ready or on its way.",
+      "allow": "Turn on notifications",
+      "later": "Not now"
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { onSessionExpired } from '@/lib/api';
 import { clearPendingPayment } from '@/lib/pending-payment';
+import { unregisterFromPush } from '@/lib/push';
 import { clearSession, getSessionGeneration, loadSession, saveSession, saveUser } from '@/lib/session';
 import { getProfile, logout } from '@/services/auth.service';
 import type { AuthResponse, User } from '@/types/auth';
@@ -75,6 +76,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
+    // While the tokens still exist, so the API knows whose push token to drop.
+    await unregisterFromPush();
     try {
       await logout();
     } catch {

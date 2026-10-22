@@ -2,8 +2,9 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { ChevronRight, Gift, LogOut, MapPin, ReceiptText, User } from 'lucide-react-native';
+import { Bell, ChevronRight, Gift, LogOut, MapPin, ReceiptText, User } from 'lucide-react-native';
 import { useAuth } from '@/context/AuthContext';
+import { useNotifications } from '@/context/NotificationsContext';
 import { useStorefront } from '@/context/StorefrontContext';
 import { canDeleteAccount } from '@/types/auth';
 import { Button } from '@/ui/Button';
@@ -15,6 +16,7 @@ export default function AccountScreen() {
   const { user, isMember, signOut } = useAuth();
   // Pickup and table-only cafes never ask for an address, so the row would lead nowhere.
   const { deliveryAvailable } = useStorefront();
+  const { unreadCount } = useNotifications();
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={[styles.content, { paddingTop: insets.top + 8 }]}>
@@ -45,6 +47,17 @@ export default function AccountScreen() {
           <Row icon={<ReceiptText size={20} color={colors.zinc700} />} label={t('account.orders')} onPress={() => router.push('/orders')} />
           <View style={styles.divider} />
           <Row icon={<Gift size={20} color={colors.zinc700} />} label={t('rewards.title')} onPress={() => router.push('/rewards')} />
+          {user && !user.isGuest ? (
+            <>
+              <View style={styles.divider} />
+              <Row
+                icon={<Bell size={20} color={colors.zinc700} />}
+                label={t('notifications.title')}
+                badge={unreadCount}
+                onPress={() => router.push('/notifications')}
+              />
+            </>
+          ) : null}
           {deliveryAvailable ? (
             <>
               <View style={styles.divider} />
@@ -79,11 +92,16 @@ export default function AccountScreen() {
   );
 }
 
-function Row({ icon, label, onPress }: { icon: React.ReactNode; label: string; onPress: () => void }) {
+function Row({ icon, label, badge, onPress }: { icon: React.ReactNode; label: string; badge?: number; onPress: () => void }) {
   return (
     <Pressable style={styles.row} onPress={onPress}>
       {icon}
       <Text style={styles.rowText}>{label}</Text>
+      {badge ? (
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{badge > 99 ? '99+' : badge}</Text>
+        </View>
+      ) : null}
       <ChevronRight size={18} color={colors.zinc400} />
     </Pressable>
   );
@@ -121,6 +139,8 @@ const styles = StyleSheet.create({
   group: { borderRadius: radius.xl, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, paddingHorizontal: 14 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 16 },
   rowText: { flex: 1, fontSize: font.base, fontWeight: '600', color: colors.zinc800 },
+  badge: { minWidth: 22, height: 22, borderRadius: 11, paddingHorizontal: 6, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' },
+  badgeText: { color: colors.primaryForeground, fontSize: 12, fontWeight: '700' },
   divider: { height: StyleSheet.hairlineWidth, backgroundColor: colors.zinc100 },
   signOut: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 16, marginTop: 8 },
   signOutText: { color: colors.destructive, fontWeight: '700', fontSize: font.base },

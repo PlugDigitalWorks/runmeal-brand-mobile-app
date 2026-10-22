@@ -46,6 +46,8 @@ const config: ExpoConfig = {
       foregroundImage: './brand/assets/adaptive-icon.png',
     },
     predictiveBackGestureEnabled: false,
+    // Expo push reaches Android through FCM, which needs the brand's Firebase app file (README "Push notifications").
+    googleServicesFile: brand.googleServicesFile || undefined,
     // Pulled in by libraries but never used; Play asks for a reason for each one it sees.
     blockedPermissions: [
       'android.permission.RECORD_AUDIO',
@@ -66,9 +68,13 @@ const config: ExpoConfig = {
   web: {
     favicon: './brand/assets/favicon.png',
   },
+  // Expo push tokens are issued per EAS project; empty until `eas init` links this brand's project.
+  extra: brand.easProjectId ? { eas: { projectId: brand.easProjectId } } : undefined,
   plugins: [
     'expo-router',
     ['@react-native-google-signin/google-signin', { iosUrlScheme: brand.google.iosUrlScheme }],
+    // Order updates arrive on Android's "default" channel, created at launch with high importance.
+    ['expo-notifications', { defaultChannel: 'default' }],
     [
       'expo-splash-screen',
       {
@@ -115,6 +121,13 @@ const withoutAppleSignIn: ConfigPlugin = (base) =>
     return mod;
   });
 
+/** A free Apple team cannot sign push notifications either; a personal-team build goes without. */
+const withoutPush: ConfigPlugin = (base) =>
+  withEntitlementsPlist(base, (mod) => {
+    delete mod.modResults['aps-environment'];
+    return mod;
+  });
+
 // Gradle properties naming this brand's Play upload key, e.g. DHARMA_COFFEE_UPLOAD_STORE_FILE.
 const signingPrefix = `${brand.slug.toUpperCase().replace(/[^A-Z0-9]/g, '_')}_UPLOAD`;
 
@@ -147,6 +160,9 @@ const withReleaseSigning: ConfigPlugin = (base) =>
     return mod;
   });
 
-const withPlatformTweaks: ConfigPlugin = (base) => withReleaseSigning(usesAppleSignIn ? base : withoutAppleSignIn(base));
+const withPlatformTweaks: ConfigPlugin = (base) => {
+  const signedIn = usesAppleSignIn ? base : withoutAppleSignIn(base);
+  return withReleaseSigning(personalTeam ? withoutPush(signedIn) : signedIn);
+};
 
 export default withPlatformTweaks(config);
