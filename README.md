@@ -57,9 +57,9 @@ Run a plain `npx expo prebuild -p ios --clean` again before a store build.
 Order updates and "My notifications" use Expo push: the API sends to Expo's
 push service, which hands iPhones to APNs and Android phones to FCM. Per brand:
 
-1. `npx eas-cli login`, then `npx eas-cli init` and put the project ID in
-   `brand/brand.json` as `easProjectId`. Without it the app never asks for a
-   push token.
+1. Create or pick the brand's project on expo.dev and put its owner, slug and
+   ID in `brand/brand.json` (`easOwner`, `easSlug`, `easProjectId`). Without
+   the ID the app never asks for a push token.
 2. iOS: `npx eas-cli credentials` → iOS → Push Notifications, to create or
    upload the team's APNs key.
 3. Android: add an Android app with the brand's package to a Firebase project,

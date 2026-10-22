@@ -20,7 +20,9 @@ const androidLinkData = brand.linkHosts.flatMap((host) => [
 /** Everything brand-specific comes from brand/brand.json and brand/assets. */
 const config: ExpoConfig = {
   name: brand.name,
-  slug: brand.slug,
+  // The EAS project's slug and owner when the brand has one (push, builds), else the brand's own slug.
+  slug: brand.easSlug || brand.slug,
+  owner: brand.easOwner || undefined,
   scheme: brand.scheme,
   version: '1.0.0',
   orientation: 'portrait',
