@@ -1,0 +1,15 @@
+{
+  "cli": {
+    "version": ">= 25.0.0",
+    "appVersionSource": "local"
+  },
+  "build": {
+    "production": {},
+    "preview": {
+      "distribution": "internal"
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
