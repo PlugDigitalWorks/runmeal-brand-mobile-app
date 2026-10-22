@@ -19,6 +19,18 @@ export type PushRegistration = 'registered' | 'skipped' | 'guest' | 'failed';
 
 /** The token this phone last registered, so sign-out can untie it. Never logged. */
 let currentToken: string | null = null;
+/** One registration at a time: overlapping calls share it instead of racing the API. */
+let inFlight: Promise<PushRegistration> | null = null;
+/** The device token the OS last reported, so only a real rotation registers again. */
+let lastDeviceToken: string | null = null;
+
+/** What went wrong, for the log: the API's code or status, else the error's own message. Never the token. */
+function failureReason(error: unknown, code: string | undefined): string {
+  if (code) return code;
+  if (isAxiosError(error)) return error.response ? `HTTP ${error.response.status}` : `network: ${error.code ?? error.message}`;
+  const message = error instanceof Error ? error.message : String(error);
+  return message.replace(/ExponentPushToken\[[^\]]*\]/g, 'ExponentPushToken[…]');
+}
 
 const apiCode = (error: unknown): string | undefined =>
   isAxiosError(error) ? ((error.response?.data as { code?: unknown } | undefined)?.code as string | undefined) : undefined;
@@ -77,9 +89,20 @@ async function fetchToken(): Promise<string> {
  * non-guest user. Errors are logged by code only and never shown, except the
  * guest refusal, which the caller can put into words.
  */
-export async function registerForPush(): Promise<PushRegistration> {
+export function registerForPush(): Promise<PushRegistration> {
+  inFlight ??= register().finally(() => {
+    inFlight = null;
+  });
+  return inFlight;
+}
+
+async function register(): Promise<PushRegistration> {
   const brandId = getBrandId();
-  if (!canUsePush() || !brandId || (await getPushPermission()) !== 'granted') return 'skipped';
+  const permission = await getPushPermission();
+  if (!canUsePush() || !brandId || permission !== 'granted') {
+    if (__DEV__) console.info(`[push] skipped: device=${Device.isDevice} project=${!!easProjectId()} brand=${!!brandId} permission=${permission}`);
+    return 'skipped';
+  }
   try {
     let token = await fetchToken();
     try {
@@ -91,11 +114,12 @@ export async function registerForPush(): Promise<PushRegistration> {
       await registerExpoPushToken(token, brandId);
     }
     currentToken = token;
+    if (__DEV__) console.info('[push] registered');
     return 'registered';
   } catch (error) {
     const code = apiCode(error);
     if (code === 'PUSH_GUEST_NOT_ALLOWED') return 'guest';
-    console.warn(`[push] registration failed${code ? ` (${code})` : ''}`);
+    console.warn(`[push] registration failed (${failureReason(error, code)})`);
     return 'failed';
   }
 }
@@ -112,8 +136,17 @@ export async function unregisterFromPush(): Promise<void> {
   }
 }
 
-/** Re-registers when the OS hands the app a new device token. */
+/**
+ * Calls back when the OS hands the app a different device token. Every token
+ * fetch (registerForPush included) reports the current token again; reacting
+ * to those would register in a loop, so the first report and repeats are only noted.
+ */
 export function onPushTokenChange(listener: () => void): () => void {
-  const subscription = Notifications.addPushTokenListener(() => listener());
+  const subscription = Notifications.addPushTokenListener(({ data }) => {
+    const token = typeof data === 'string' ? data : JSON.stringify(data);
+    const rotated = lastDeviceToken !== null && token !== lastDeviceToken;
+    lastDeviceToken = token;
+    if (rotated) listener();
+  });
   return () => subscription.remove();
 }

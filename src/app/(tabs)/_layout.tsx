@@ -29,7 +29,8 @@ export default function TabsLayout() {
   const { brand, ready } = useBrand();
   const { summary } = useCart();
   const { unreadCount } = useNotifications();
-  if (ready && !brand) return <Redirect href="/brands" />;
+  // No brand (it failed to load): the start screen explains and retries.
+  if (ready && !brand) return <Redirect href="/" />;
 
   return (
     <Tabs

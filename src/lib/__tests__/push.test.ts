@@ -87,11 +87,38 @@ it('unties the registered token on sign-out, even when the API fails', async () 
   expect(removeExpoPushToken).toHaveBeenCalledWith('ExponentPushToken[mine]');
 });
 
-it('calls back when the OS rotates the push token', () => {
+it('calls back only when the OS reports a different device token, never for repeats', () => {
   const listener = jest.fn();
   const stop = onPushTokenChange(listener);
   const [[onToken]] = (Notifications.addPushTokenListener as jest.Mock).mock.calls;
-  onToken({ type: 'ios', data: 'device-token' });
+  // Each token fetch reports the current token; registering on those would loop forever.
+  onToken({ type: 'ios', data: 'device-a' });
+  onToken({ type: 'ios', data: 'device-a' });
+  onToken({ type: 'ios', data: 'device-a' });
+  expect(listener).not.toHaveBeenCalled();
+  onToken({ type: 'ios', data: 'device-b' });
+  expect(listener).toHaveBeenCalledTimes(1);
+  onToken({ type: 'ios', data: 'device-b' });
   expect(listener).toHaveBeenCalledTimes(1);
   stop();
+});
+
+it('shares one registration between overlapping calls', async () => {
+  let release: () => void = () => undefined;
+  (registerExpoPushToken as jest.Mock).mockReturnValueOnce(new Promise<void>((resolve) => (release = resolve)));
+  const first = registerForPush();
+  const second = registerForPush();
+  await Promise.resolve();
+  release();
+  expect(await first).toBe('registered');
+  expect(await second).toBe('registered');
+  expect(registerExpoPushToken).toHaveBeenCalledTimes(1);
+});
+
+it('logs why a token could not be fetched, without the token', async () => {
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+  (Notifications.getExpoPushTokenAsync as jest.Mock).mockRejectedValueOnce(new Error('no aps-environment for ExponentPushToken[x]'));
+  expect(await registerForPush()).toBe('failed');
+  expect(warn).toHaveBeenCalledWith('[push] registration failed (no aps-environment for ExponentPushToken[…])');
+  warn.mockRestore();
 });
